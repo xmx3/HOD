@@ -13,7 +13,6 @@
 #include "Sequence/HatuneOfTheDead/CppImpl/Parent.h"
 #include "Sequence/Title.h"
 #include "Sequence/HatuneOfTheDead/CppImpl/BattleResult.h"
-#include "Sequence/Test.h"
 
 namespace Sequence{
 namespace HatuneOfTheDead{

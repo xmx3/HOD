@@ -53,4 +53,5 @@ data.bin
 /Script
 /ShaderTest
 /Tool
-
+/Source/tolua_bind/luafunc_glue.cpp
+/Source/tolua_bind/luafunc_glue.h
