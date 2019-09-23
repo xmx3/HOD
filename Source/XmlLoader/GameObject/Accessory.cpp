@@ -7,7 +7,6 @@
 #include<GameLib/PseudoXml/Element.h>
 #include<GameLib/PseudoXml/Attribute.h>
 #include<GameLib/FileIO/InFile.h>
-#include"GameObject/AccessoryUtils/MME/TemplateModel.h"
 #include<assert.h>
 #include<GameLib/Base/RefString.h>
 
