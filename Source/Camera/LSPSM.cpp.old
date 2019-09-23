@@ -1,0 +1,461 @@
+//------------------------------------------------------------------------
+// File : LSPSM.cpp
+// Desc : Light Space Perspective Shadow Maps
+// Date : May 30, 2010
+// Author : Pocol
+//------------------------------------------------------------------------
+
+//
+// Includes
+//
+#include "LSPSM.h"
+
+//
+// Defines
+//
+#define NEW_FORMULA 1
+
+//------------------------------------------------------------------------
+// Name : TransformCoord()
+// Desc : 行列で3次元ベクトルを変換する
+//------------------------------------------------------------------------
+VECTOR3 TransformCoord(VECTOR3 point, MATRIX matrix)
+{
+	float x = matrix._11 * point.x + matrix._21 * point.y + matrix._31 * point.z + matrix._41;
+	float y = matrix._12 * point.x + matrix._22 * point.y + matrix._32 * point.z + matrix._42;
+	float z = matrix._13 * point.x + matrix._23 * point.y + matrix._33 * point.z + matrix._43;
+	float w = matrix._14 * point.x + matrix._24 * point.y + matrix._34 * point.z + matrix._44;
+
+	x /= w;
+	y /= w;
+	z /= w;
+	return VECTOR3( x, y, z );
+}
+
+//////////////////////////////////////////////////////////////////////////
+// PointList Class
+//////////////////////////////////////////////////////////////////////////
+
+//------------------------------------------------------------------------
+// Name : PointList()
+// Desc : コンストラクタ
+//------------------------------------------------------------------------
+PointList::PointList()
+{
+	//リストをクリア
+	m_list.clear();
+}
+
+//------------------------------------------------------------------------
+// Name : GetSize()
+// Desc : サイズを返す
+//------------------------------------------------------------------------
+int PointList::GetSize()
+{
+	return (int)m_list.size();
+}
+
+//------------------------------------------------------------------------
+// Name : Add()
+// Desc : 座標を追加する
+//------------------------------------------------------------------------
+void PointList::Add(VECTOR3& value)
+{
+	m_list.push_back( value );
+}
+
+//------------------------------------------------------------------------
+// Name : Clear()
+// Desc : リストをクリアする
+//------------------------------------------------------------------------
+void PointList::Clear()
+{
+	m_list.clear();
+}
+
+//------------------------------------------------------------------------
+// Name : Transform()
+// Desc : 指定した行列でリストを変換する
+//------------------------------------------------------------------------
+void PointList::Transform(MATRIX matrix)
+{
+	int size = (int)m_list.size();
+	for( int i=0; i<size; i++ )
+	{
+		VECTOR3 point = m_list[i];
+		m_list[i] = TransformCoord( point, matrix );
+	}
+}
+
+//------------------------------------------------------------------------
+// Name : ComputeBoundingBox()
+// Desc : AABBを算出する
+//------------------------------------------------------------------------
+void PointList::ComputeBoundingBox(VECTOR3& min, VECTOR3& max)
+{
+	int size = (int)m_list.size();
+	if( size > 0 )
+	{
+		min = max = m_list[0];
+		for( int i=1; i<size; i++ )
+		{
+			min = Min( min, m_list[i] );
+			max = Max( max, m_list[i] );
+		}
+	}
+}
+
+//------------------------------------------------------------------------
+// operator =
+//------------------------------------------------------------------------
+PointList& PointList::operator = (const PointList &value)
+{
+	m_list.clear();
+	int size = (int)value.m_list.size();
+	for( int i=0; i<size; i++ )
+	{
+		m_list.push_back( value.m_list[i] );
+	}
+	return (*this);
+}
+
+//------------------------------------------------------------------------
+// operator []
+//------------------------------------------------------------------------
+VECTOR3& PointList::operator[](int index)
+{
+	return m_list[index];
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// LSPSMCalculator Class
+//////////////////////////////////////////////////////////////////////////
+
+//------------------------------------------------------------------------
+// Name : LSPSMCalculator()
+// Desc : コンストラクタ
+//------------------------------------------------------------------------
+LSPSMCalculator::LSPSMCalculator()
+{
+	nearClip = 0.1f;
+	useLSPSM = true;
+	pointList.Clear();
+}
+
+//------------------------------------------------------------------------
+// Name : ComputeUpVector()
+// Desc : 視点・ライトベクトルからアップベクトルを計算する
+//-------------------------------------------------------------------------
+VECTOR3 LSPSMCalculator::ComputeUpVector(VECTOR3 viewDirection, VECTOR3 lightDirection)
+{
+	VECTOR3 left;
+	VECTOR3 up;
+
+	left = Cross( lightDirection, viewDirection );
+	up = Cross( left, lightDirection );
+	up.Normalize();
+	return up;
+}
+
+//------------------------------------------------------------------------
+// Name : ComputeMatrix_USM()
+// Desc : 通常のシャドウマップ行列を計算する
+//------------------------------------------------------------------------
+void LSPSMCalculator::ComputeMatrix_USM()
+{
+	VECTOR3 max, min;
+
+	//ライトのビュー行列を求める
+	lightView = CreateLookAt( eyePosition, (eyePosition + lightDirection), viewDirection );
+
+	//ライト空間へ変換
+	pointList.Transform( lightView );
+
+	//AABBを算出
+	pointList.ComputeBoundingBox( min, max );
+
+	//範囲を適正にする
+	lightProjection = GetUnitCubeClipMatrix( min, max );
+}
+
+//------------------------------------------------------------------------
+// Name : ComputeMatrix_LSPSM()
+// Desc : ライト空間透視シャドウマップ行列を計算
+//------------------------------------------------------------------------
+void LSPSMCalculator::ComputeMatrix_LSPSM()
+{
+	VECTOR3 max, min;
+
+	//視線ベクトルとライトベクトルのなす角度を求める
+	float angle = GetCrossingAngle(viewDirection, lightDirection);
+
+	//なす角が0度または180度の場合
+	if ( angle == 0.0f || angle == Pif )
+	{
+		//ライトによる歪みがないので通常のシャドウマップを適用
+		ComputeMatrix_USM();
+		return;
+	}
+
+	//リストをコピーしておく
+	PointList listClone = pointList;
+
+	float sinGamma = sqrtf( 1.0f - angle * angle );
+
+	// アップベクトルを算出
+	VECTOR3 up = ComputeUpVector( viewDirection, lightDirection );
+
+	//ライトのビュー行列を求める
+	lightView = CreateLookAt( eyePosition, (eyePosition + lightDirection), up );
+
+	//ライトのビュー行列でリストを変換し、AABBを算出
+	pointList.Transform( lightView );
+	pointList.ComputeBoundingBox( min, max );
+
+	//新しい視錐台を求める
+	const float factor = 1.0f / sinGamma;
+	const float z_n = factor * nearClip;
+	const float d = abs( max.y - min.y );
+#if NEW_FORMULA 
+	// New Formula written in ShaderX4
+	const float z0 = - z_n;
+	const float z1 = - ( z_n + d * sinGamma );
+	const float n = d / ( sqrtf( z1 / z0 ) - 1.0f );
+#else
+ 	// Old Formula written in papers
+	const float z_f = z_n + d * sinGamma;
+	const float n = ( z_n + sqrtf( z_f * z_n ) ) * factor;
+#endif
+	const float f = n + d;
+	VECTOR3 pos = eyePosition - up * ( n - nearClip );
+
+	//シャドウマップ生成用ライトのビュー行列
+	lightView = CreateLookAt( pos, (pos + lightDirection), up );
+
+	//Y方向への射影行列を取得
+	MATRIX proj = GetPerspective( n, f );
+
+	//透視変換後の空間へ変換する
+	Multiply( lightView, proj, lightProjection );
+	listClone.Transform( lightProjection );
+
+	//AABBを算出
+	listClone.ComputeBoundingBox( min, max );
+
+	//範囲を適正にする
+	MATRIX clip = GetUnitCubeClipMatrix( min, max );
+
+	//シャドウマップ生成用ライトの射影行列を求める
+	Multiply( proj, clip, lightProjection );
+}
+
+//------------------------------------------------------------------------
+// Name : UpdateShadowMatrix()
+// Desc : ライトの行列を更新する
+//------------------------------------------------------------------------
+void LSPSMCalculator::UpdateShadowMatrix()
+{
+	MATRIX viewProj;
+	Multiply( eyeView, eyeProjection, viewProj );
+
+	//ビューボリュームを求める
+	ComputeLightVolumePoints( viewProj );
+
+	// Light Space Perspective Shadow Map
+	ComputeMatrix_LSPSM();
+
+	//左手座標系に変換
+	MATRIX scale = CreateScale( 1.0f, 1.0f, -1.0f );
+	Multiply( lightProjection, scale, lightProjection );
+
+	//シャドウマップに使う最終的な行列を求める
+	Multiply( lightView, lightProjection, lightViewProjection );
+}
+
+//-----------------------------------------------------------------------
+// Name : ComputeLightVolumePoints()
+// Desc : 凸体を求める
+//-----------------------------------------------------------------------
+void LSPSMCalculator::ComputeLightVolumePoints(MATRIX viewProj)
+{
+	//カメラの視錐台を求める
+	ComputeViewFrustum( viewProj );
+
+	//カメラの視錐台に影を投げるオブジェクトがあるか判定する
+	// Check 1: 視錐台と交差しているか？
+	/*** 視錐台を形成する平面とAABBとの交差判定を行う ***/
+	///面倒なので未実装///
+
+	// Check 2: オブジェクトの各頂点からライトベクトル方向に
+	// レイを飛ばし交差するか？
+	/*** 各頂点からライトベクトル方向にレイを飛ばし、視錐台を形成する平面との交差判定を行う ***/
+	///面倒なので未実装///
+}
+
+//-----------------------------------------------------------------------
+// Name : ComputeViewFrustum()
+// Desc : カメラの視錐台を求める
+//-----------------------------------------------------------------------
+void LSPSMCalculator::ComputeViewFrustum(MATRIX viewProj )
+{
+	pointList.Clear();
+
+	//　立方体を作成
+	VECTOR3 v[8];
+	v[0] = VECTOR3( -1.0f, +1.0f, -1.0f );
+	v[1] = VECTOR3( -1.0f, -1.0f, -1.0f );
+	v[2] = VECTOR3( +1.0f, -1.0f, -1.0f );
+	v[3] = VECTOR3( +1.0f, +1.0f, -1.0f );
+	v[4] = VECTOR3( -1.0f, +1.0f, +1.0f );
+	v[5] = VECTOR3( -1.0f, -1.0f, +1.0f );
+	v[6] = VECTOR3( +1.0f, -1.0f, +1.0f );
+	v[7] = VECTOR3( +1.0f, +1.0f, +1.0f );
+	for( int i=0; i<8; i++ )
+	{
+		pointList.Add( v[i] );
+	}
+
+	//　ビュー行列→射影行列の逆変換を行う行列を求める
+	MATRIX invViewProj = Invert( viewProj );
+
+	//　立方体に逆変換する行列をかけ、視錐台を求める
+	pointList.Transform( invViewProj );
+}
+
+//-----------------------------------------------------------------------
+// Name : GetUnitCubeClipMatrix()
+// Desc : 範囲を適正にする行列を取得する
+//-----------------------------------------------------------------------
+MATRIX LSPSMCalculator::GetUnitCubeClipMatrix(VECTOR3 min, VECTOR3 max)
+{
+	MATRIX result;
+
+	result._11 = 2.0f / ( max.x - min.x );
+	result._21 = 0.0f;
+	result._31 = 0.0f;
+	result._41 = -( max.x + min.x ) / ( max.x - min.x );
+
+	result._12 = 0.0f;
+	result._22 = 2.0f / ( max.y - min.y );
+	result._32 = 0.0f;
+	result._42 = -( max.y + min.y ) / ( max.y - min.y );
+
+	result._13 = 0.0f;
+	result._23 = 0.0f;
+	result._33 = 1.0f / ( max.z - min.z );
+	result._43 = - min.z / ( max.z - min.z );
+
+	result._14 = 0.0f;
+	result._24 = 0.0f;
+	result._34 = 0.0f;
+	result._44 = 1.0f;
+
+	return result;
+}
+
+//-----------------------------------------------------------------------
+// Name : GetPerspective()
+// Desc : Y方向への射影行列を取得する
+//-----------------------------------------------------------------------
+MATRIX LSPSMCalculator::GetPerspective( float nearDist, float farDist )
+{
+	MATRIX result;
+	result.Identity();
+	result._22 = farDist /( farDist - nearDist );
+	result._24 = 1.0f;
+	result._42 = -farDist * nearDist /( farDist - nearDist );
+	result._44 = 0.0f;
+	return result;
+}
+
+//-----------------------------------------------------------------------
+// Name : SetEyePos()
+// Desc : カメラの位置を設定
+//-----------------------------------------------------------------------
+void LSPSMCalculator::SetEyePos( VECTOR3 value )
+{
+	eyePosition = value;
+}
+
+//-----------------------------------------------------------------------
+// Name : SetViewDir()
+// Desc : カメラの視線ベクトルを設定
+//-----------------------------------------------------------------------
+void LSPSMCalculator::SetViewDir( VECTOR3 value )
+{
+	viewDirection = value;
+}
+
+//-----------------------------------------------------------------------
+// Name : SetLightDir()
+// Desc : ライトベクトルを設定
+//-----------------------------------------------------------------------
+void LSPSMCalculator::SetLightDir( VECTOR3 value )
+{
+	lightDirection = value;
+}
+
+//-----------------------------------------------------------------------
+// Name : SetEyeView()
+// Desc : カメラのビュー行列を設定
+//-----------------------------------------------------------------------
+void LSPSMCalculator::SetEyeView( MATRIX value )
+{
+	eyeView = value; 
+}
+
+//-----------------------------------------------------------------------
+// Name : SetEyeProjection()
+// Desc : カメラの射影行列を設定
+//-----------------------------------------------------------------------
+void LSPSMCalculator::SetEyeProjection( MATRIX value )
+{
+	eyeProjection = value;
+}
+
+//-----------------------------------------------------------------------
+// Name : SetNearClip()
+// Desc : ニア平面までの距離を設定する
+//-----------------------------------------------------------------------
+void LSPSMCalculator::SetNearClip( float value )
+{
+	nearClip = value;
+}
+
+//-----------------------------------------------------------------------
+// Name : SetUseLSPSM()
+// Desc : フラグの設定
+//-----------------------------------------------------------------------
+void LSPSMCalculator::SetUseLSPSM( bool value )
+{
+	useLSPSM = value;
+}
+
+//-----------------------------------------------------------------------
+// Name : GetLightView()
+// Desc : ライトのビュー行列を取得する
+//-----------------------------------------------------------------------
+MATRIX LSPSMCalculator::GetLightView()
+{
+	return lightView; 
+}
+
+//-----------------------------------------------------------------------
+// Name : GetLightProjection()
+// Desc : ライトの射影行列を取得する
+//-----------------------------------------------------------------------
+MATRIX LSPSMCalculator::GetLightProjection()
+{
+	return lightProjection;
+}
+
+//-----------------------------------------------------------------------
+// Name : GetLightViewProjection()
+// Desc : ライトのビュー射影行列を取得する
+//-----------------------------------------------------------------------
+MATRIX LSPSMCalculator::GetLightViewProjection()
+{
+	return lightViewProjection;
+}
+

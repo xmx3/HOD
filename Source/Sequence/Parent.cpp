@@ -1,0 +1,66 @@
+#include <GameLib/GameLib.h>
+#include "Sequence/Parent.h"
+#include "Sequence/Title.h"
+#include "Sequence/HatuneOfTheDead/LuaImpl/Parent.h"
+#include "Sequence/HatuneOfTheDead/CppImpl/Parent.h"
+
+namespace Sequence{
+
+Parent* Parent::mInstance = 0;
+
+void Parent::create(){
+	ASSERT( !mInstance );
+	mInstance = new Parent();
+}
+
+void Parent::destroy(){
+	ASSERT( mInstance );
+	SAFE_DELETE( mInstance );
+}
+
+Parent* Parent::instance(){
+	return mInstance;
+}
+
+Parent::Parent() : 
+mMode( MODE_NONE ),
+mChild( 0 ){
+	//ç≈èâÇ…çÏÇÈÇÃÇÕÉ^ÉCÉgÉã
+	//mChild = new Title();
+	//mChild = new LuaTest::Test();
+	//mChild = new LuaTest::TestCutScene();
+	//mChild = new Dance::Parent();
+	//mChild = new Test();
+	//mChild = new Game::Parent();
+	//mChild = new HatuneOfTheDead::CppImpl::Parent();
+	mChild = new HatuneOfTheDead::LuaImpl::Parent();
+
+}
+
+Parent::~Parent(){
+	//écÇ¡ÇƒÇ¢ÇÍÇŒñïéE
+	SAFE_DELETE( mChild );
+}
+
+void Parent::update(){
+	Base* nextChild = mChild->update( this );
+	if ( nextChild != mChild ){
+		//ëJà⁄îªíË
+		Child* casted = dynamic_cast< Child* >( nextChild );
+		ASSERT( casted ); //é∏îsÇÕÇ†ÇËÇ¶Ç»Ç¢ÅB
+		SAFE_DELETE( mChild );
+
+		mChild = casted;
+	}
+	nextChild = 0; //îOÇÃÇΩÇﬂ
+}
+
+void Parent::setMode( Mode mode ){
+	mMode = mode;
+}
+
+Parent::Mode Parent::mode() const {
+	return mMode;
+}
+
+} //namespace Sequence

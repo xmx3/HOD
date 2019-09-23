@@ -1,0 +1,418 @@
+
+$#include<LinearMath/btTransform.h>
+$#include<LinearMath/btVector3.h>
+$#include<LinearMath/btScalar.h>
+$#include<LinearMath/btMatrix3x3.h>
+
+typedef float btScalar;
+
+
+class btTransform {
+	
+public:
+	
+	btTransform();
+	btTransform(const btQuaternion& q, 
+		const btVector3& c = btVector3(btScalar(0), btScalar(0), btScalar(0)));
+
+	btTransform(const btMatrix3x3& b, 
+		const btVector3& c = btVector3(btScalar(0), btScalar(0), btScalar(0)));
+	
+	btTransform (const btTransform& other);
+
+	~btTransform();
+
+	btTransform& operator=(const btTransform& other);
+
+	void mult(const btTransform& t1, const btTransform& t2);
+
+	btVector3 operator()(const btVector3& x) const;
+	
+	btVector3 operator*(const btVector3& x) const;
+
+	btQuaternion operator*(const btQuaternion& q) const;
+
+	btMatrix3x3&       getBasis();
+
+	//参照バージョンを呼びたい場合でもconst&バージョンを呼んでしまうのでこっちはluaに公開しない
+	//const btMatrix3x3& getBasis()    const;
+
+	btVector3&         getOrigin();
+
+	//const btVector3&   getOrigin()   const;
+
+	btQuaternion getRotation() const;
+	
+	
+	void setFromOpenGLMatrix(const btScalar *m);
+
+	void getOpenGLMatrix(btScalar *m) const;
+
+	void setOrigin(const btVector3& origin);
+
+	btVector3 invXform(const btVector3& inVec) const;
+
+	void setBasis(const btMatrix3x3& basis);
+
+	void setRotation(const btQuaternion& q);
+
+	void setIdentity();
+
+	btTransform& operator*=(const btTransform& t); 
+	
+
+	btTransform inverse() const;
+
+	btTransform inverseTimes(const btTransform& t) const;  
+
+	btTransform operator*(const btTransform& t) const;
+
+	//この関数はC++こう宣言しているがが
+	//static const btTransform&	getIdentity();
+	//ここルアに一枚かませるので
+	//static btTransform	getIdentity();
+	//にして参照いらない
+	//lua側でこういう処理ができない
+	//local init_transform = btTransform:getIdentity()
+	//init_transform:getOrigin():setValue( -300, 55,-2 );
+	static btTransform	getIdentity();
+
+};
+
+
+
+class btVector3
+{
+public:
+	/**@brief No initialization constructor */
+	btVector3();
+
+	/**@brief Constructor from scalars 
+	 * @param x X value
+	 * @param y Y value 
+	 * @param z Z value 
+	 */
+	btVector3(const btScalar& _x, const btScalar& _y, const btScalar& _z);
+
+	// Set Vector 
+	//btVector3( btSimdFloat4 v);
+
+	// Copy constructor
+	btVector3(const btVector3& rhs);
+
+	~btVector3();
+
+	// Assignment Operator
+	btVector3& 
+		operator=(const btVector3& v);
+
+	/**@brief Add a vector to this one 
+	 * @param The vector to add to this one */
+	btVector3& operator+=(const btVector3& v);
+
+	/**@brief Subtract a vector from this one
+	 * @param The vector to subtract */
+	btVector3& operator-=(const btVector3& v);
+	
+	/**@brief Scale the vector
+	 * @param s Scale factor */
+	btVector3& operator*=(const btScalar& s);
+	
+	/**@brief Inversely scale the vector 
+	 * @param s Scale factor to divide by */
+	btVector3& operator/=(const btScalar& s);
+	
+	/**@brief Return the dot product
+	 * @param v The other vector in the dot product */
+	btScalar dot(const btVector3& v) const;
+	
+	/**@brief Return the length of the vector squared */
+	btScalar length2() const;
+	
+	/**@brief Return the length of the vector */
+	btScalar length() const;
+
+	/**@brief Return the norm (length) of the vector */
+	btScalar norm() const;
+
+	/**@brief Return the norm (length) of the vector */
+	btScalar safeNorm() const;
+
+	/**@brief Return the distance squared between the ends of this and another vector
+	 * This is symantically treating the vector like a point */
+	btScalar distance2(const btVector3& v) const;
+
+	/**@brief Return the distance between the ends of this and another vector
+	 * This is symantically treating the vector like a point */
+	btScalar distance(const btVector3& v) const;
+
+	btVector3& safeNormalize();
+
+	/**@brief Normalize this vector 
+	 * x^2 + y^2 + z^2 = 1 */
+	btVector3& normalize();
+
+	/**@brief Return a normalized version of this vector */
+	btVector3 normalized() const;
+
+	/**@brief Return a rotated version of this vector
+	 * @param wAxis The axis to rotate about 
+	 * @param angle The angle to rotate by */
+	btVector3 rotate( const btVector3& wAxis, const btScalar angle ) const;
+
+	/**@brief Return the angle between this and another vector
+	 * @param v The other vector */
+	btScalar angle(const btVector3& v) const;
+
+	/**@brief Return a vector will the absolute values of each element */
+	btVector3 absolute() const;
+	
+	/**@brief Return the cross product between this and another vector 
+	 * @param v The other vector */
+	btVector3 cross(const btVector3& v) const;
+	
+	btScalar triple(const btVector3& v1, const btVector3& v2) const;
+	
+	/**@brief Return the axis with the smallest value 
+	 * Note return values are 0,1,2 for x, y, or z */
+	int minAxis() const;
+	
+		/**@brief Return the axis with the largest value 
+	 * Note return values are 0,1,2 for x, y, or z */
+	int maxAxis() const;
+	
+	int furthestAxis() const;
+	
+	int closestAxis() const;
+	
+	void setInterpolate3(const btVector3& v0, const btVector3& v1, btScalar rt);
+	
+	
+	/**@brief Return the linear interpolation between this and another vector 
+	 * @param v The other vector 
+	 * @param t The ration of this to v (t = 0 => return this, t=1 => return other) */
+	btVector3 lerp(const btVector3& v, const btScalar& t) const;
+	
+	/**@brief Elementwise multiply this vector by the other 
+	 * @param v The other vector */
+	btVector3& operator*=(const btVector3& v);
+	
+	/**@brief Return the x value */
+	const btScalar& getX() const { return m_floats[0]; }
+	/**@brief Return the y value */
+	const btScalar& getY() const { return m_floats[1]; }
+	/**@brief Return the z value */
+	const btScalar& getZ() const { return m_floats[2]; }
+	/**@brief Set the x value */
+	void	setX(btScalar _x) { m_floats[0] = _x;};
+	/**@brief Set the y value */
+	void	setY(btScalar _y) { m_floats[1] = _y;};
+	/**@brief Set the z value */
+	void	setZ(btScalar _z) { m_floats[2] = _z;};
+	/**@brief Set the w value */
+	void	setW(btScalar _w) { m_floats[3] = _w;};
+	/**@brief Return the x value */
+	const btScalar& x() const { return m_floats[0]; }
+	/**@brief Return the y value */
+	const btScalar& y() const { return m_floats[1]; }
+	/**@brief Return the z value */
+	const btScalar& z() const { return m_floats[2]; }
+	/**@brief Return the w value */
+	const btScalar& w() const { return m_floats[3]; }
+
+	bool	operator==(const btVector3& other) const;
+	
+	bool	operator!=(const btVector3& other) const;
+
+	/**@brief Set each element to the max of the current values and the values of another btVector3
+	 * @param other The other btVector3 to compare with 
+	 */
+	void	setMax(const btVector3& other);
+	
+	/**@brief Set each element to the min of the current values and the values of another btVector3
+	 * @param other The other btVector3 to compare with 
+	 */
+	void	setMin(const btVector3& other);
+	
+	void 	setValue(const btScalar& _x, const btScalar& _y, const btScalar& _z);
+	
+	void	getSkewSymmetricMatrix(btVector3* v0,btVector3* v1,btVector3* v2) const;
+	
+	void setZero();
+	
+	bool isZero() const;
+
+	bool fuzzyZero() const;
+
+};
+
+
+/**@brief The btMatrix3x3 class implements a 3x3 rotation matrix, to perform linear algebra in combination with btQuaternion, btTransform and btVector3.
+* Make sure to only include a pure orthogonal matrix without scaling. */
+class btMatrix3x3 {
+public:
+	/** @brief No initializaion constructor */
+	btMatrix3x3 ();
+
+	/**@brief Constructor from Quaternion */
+	explicit btMatrix3x3(const btQuaternion& q);
+
+	/** @brief Constructor with row major formatting */
+	btMatrix3x3(const btScalar& xx, const btScalar& xy, const btScalar& xz,
+		const btScalar& yx, const btScalar& yy, const btScalar& yz,
+		const btScalar& zx, const btScalar& zy, const btScalar& zz);
+
+
+	/** @brief Copy constructor */
+	btMatrix3x3 (const btMatrix3x3& other);
+    
+	/** @brief Assignment Operator */
+	btMatrix3x3& operator=(const btMatrix3x3& other);
+
+
+	/** @brief Get a column of the matrix as a vector 
+	*  @param i Column number 0 indexed */
+	btVector3 getColumn(int i) const;
+	 
+	/** @brief Get a row of the matrix as a vector 
+	*  @param i Row number 0 indexed */
+	const btVector3& getRow(int i) const;
+
+	/** @brief Get a mutable reference to a row of the matrix as a vector 
+	*  @param i Row number 0 indexed */
+	btVector3&  operator[](int i);
+
+	/** @brief Get a const reference to a row of the matrix as a vector 
+	*  @param i Row number 0 indexed */
+	const btVector3& operator[](int i) const;
+
+	/** @brief Multiply by the target matrix on the right
+	*  @param m Rotation matrix to be applied 
+	* Equivilant to this = this * m */
+	btMatrix3x3& operator*=(const btMatrix3x3& m); 
+
+	/** @brief Adds by the target matrix on the right
+	*  @param m matrix to be applied 
+	* Equivilant to this = this + m */
+	btMatrix3x3& operator+=(const btMatrix3x3& m); 
+
+	/** @brief Substractss by the target matrix on the right
+	*  @param m matrix to be applied 
+	* Equivilant to this = this - m */
+	btMatrix3x3& operator-=(const btMatrix3x3& m); 
+
+	/** @brief Set from the rotational part of a 4x4 OpenGL matrix
+	*  @param m A pointer to the beginning of the array of scalars*/
+	void setFromOpenGLSubMatrix(const btScalar *m);
+
+	/** @brief Set the values of the matrix explicitly (row major)
+	*  @param xx Top left
+	*  @param xy Top Middle
+	*  @param xz Top Right
+	*  @param yx Middle Left
+	*  @param yy Middle Middle
+	*  @param yz Middle Right
+	*  @param zx Bottom Left
+	*  @param zy Bottom Middle
+	*  @param zz Bottom Right*/
+	void setValue(const btScalar& xx, const btScalar& xy, const btScalar& xz, 
+		const btScalar& yx, const btScalar& yy, const btScalar& yz, 
+		const btScalar& zx, const btScalar& zy, const btScalar& zz);
+
+	/** @brief Set the matrix from a quaternion
+	*  @param q The Quaternion to match */  
+	void setRotation(const btQuaternion& q);
+
+	/** @brief Set the matrix from euler angles using YPR around YXZ respectively
+	*  @param yaw Yaw about Y axis
+	*  @param pitch Pitch about X axis
+	*  @param roll Roll about Z axis 
+	*/
+	void setEulerYPR(const btScalar& yaw, const btScalar& pitch, const btScalar& roll);
+
+	/** @brief Set the matrix from euler angles YPR around ZYX axes
+	* @param eulerX Roll about X axis
+	* @param eulerY Pitch around Y axis
+	* @param eulerZ Yaw aboud Z axis
+	* 
+	* These angles are used to produce a rotation matrix. The euler
+	* angles are applied in ZYX order. I.e a vector is first rotated 
+	* about X then Y and then Z
+	**/
+	void setEulerZYX(btScalar eulerX,btScalar eulerY,btScalar eulerZ);
+
+	/**@brief Set the matrix to the identity */
+	void setIdentity();
+
+	//static const btMatrix3x3&	getIdentity();//本来の関数
+	//	本来はconst & を返すがそれをluaに渡すと非常に扱いにくいので値を直接渡してる
+	static btMatrix3x3 getIdentity();
+
+	/**@brief Fill the rotational part of an OpenGL matrix and clear the shear/perspective
+	* @param m The array to be filled */
+	void getOpenGLSubMatrix(btScalar *m) const ;
+
+	/**@brief Get the matrix represented as a quaternion 
+	* @param q The quaternion which will be set */
+	void getRotation(btQuaternion& q) const;
+
+	/**@brief Get the matrix represented as euler angles around YXZ, roundtrip with setEulerYPR
+	* @param yaw Yaw around Y axis
+	* @param pitch Pitch around X axis
+	* @param roll around Z axis */	
+	void getEulerYPR(btScalar& yaw, btScalar& pitch, btScalar& roll) const;
+
+
+	/**@brief Get the matrix represented as euler angles around ZYX
+	* @param yaw Yaw around X axis
+	* @param pitch Pitch around Y axis
+	* @param roll around X axis 
+	* @param solution_number Which solution of two possible solutions ( 1 or 2) are possible values*/	
+	void getEulerZYX(btScalar& yaw, btScalar& pitch, btScalar& roll, unsigned int solution_number = 1) const;
+
+	/**@brief Create a scaled copy of the matrix 
+	* @param s Scaling vector The elements of the vector will scale each column */
+	btMatrix3x3 scaled(const btVector3& s) const;
+	btMatrix3x3 transposeTimes(const btMatrix3x3& m) const;
+	btMatrix3x3 timesTranspose(const btMatrix3x3& m) const;
+
+	btScalar tdotx(const btVector3& v) const; 
+										  
+	btScalar tdoty(const btVector3& v) const; 
+										  
+	btScalar tdotz(const btVector3& v) const; 
+	
+
+
+	/**@brief diagonalizes this matrix by the Jacobi method.
+	* @param rot stores the rotation from the coordinate system in which the matrix is diagonal to the original
+	* coordinate system, i.e., old_this = rot * new_this * rot^T. 
+	* @param threshold See iteration
+	* @param iteration The iteration stops when all off-diagonal elements are less than the threshold multiplied 
+	* by the sum of the absolute values of the diagonal, or when maxSteps have been executed. 
+	* 
+	* Note that this matrix is assumed to be symmetric. 
+	*/
+	void diagonalize(btMatrix3x3& rot, btScalar threshold, int maxSteps);
+
+
+	/**@brief Calculate the matrix cofactor 
+	* @param r1 The first row to use for calculating the cofactor
+	* @param c1 The first column to use for calculating the cofactor
+	* @param r1 The second row to use for calculating the cofactor
+	* @param c1 The second column to use for calculating the cofactor
+	* See http://en.wikipedia.org/wiki/Cofactor_(linear_algebra) for more details
+	*/
+	btScalar cofac(int r1, int c1, int r2, int c2) const;
+
+	void	serialize( btMatrix3x3Data& dataOut) const;
+
+	void	serializeFloat( btMatrix3x3FloatData& dataOut) const;
+
+	void	deSerialize(const btMatrix3x3Data& dataIn);
+
+	void	deSerializeFloat(const btMatrix3x3FloatData& dataIn);
+
+	void	deSerializeDouble(const btMatrix3x3DoubleData& dataIn);
+
+};

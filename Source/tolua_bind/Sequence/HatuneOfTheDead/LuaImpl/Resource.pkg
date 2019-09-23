@@ -1,0 +1,62 @@
+$#include"Sequence/HatuneOfTheDead/LuaImpl/Resource.h"
+
+
+class btTransform;
+
+
+namespace HOD {
+	class EnemyManager;
+	class  EnemySpawner;
+}
+
+namespace MMD {
+	class CameraAnimation;
+}
+
+namespace XmlLoader {
+	namespace GameObject {
+		class Player;
+		typedef std::unique_ptr<Player> PlayerUniquePtr;
+		class Enemy;
+		typedef std::shared_ptr<Enemy> EnemySharedPtr;
+	}
+}
+
+
+namespace GameObject {
+	class Player;
+	typedef std::shared_ptr<Player> PlayerSharedPtr;
+	class Enemy;
+	typedef std::shared_ptr<Enemy> EnemySharedPtr;
+	class Stage;
+	typedef std::shared_ptr<Stage> StageSharedPtr;
+}
+
+
+
+namespace Sequence { namespace HatuneOfTheDead { namespace LuaImpl {
+
+class Resource {
+public:
+	static Resource* instance();
+	void release();
+
+	bool isReady();
+
+	void loadEnemy(const std::string &filename);
+	void loadPlayer(const std::string &filename);
+	void loadCameraAnimation(const std::string &filename);
+	void loadStage(const std::string &filename);
+
+	GameObject::PlayerSharedPtr instancePlayer()const;
+	
+	GameObject::StageSharedPtr getStage()const;
+
+	const std::vector<XmlLoader::GameObject::EnemySharedPtr> &getEnemies();
+
+	const std::shared_ptr<MMD::CameraAnimation>& getCameraAnimation();
+
+};
+
+}}} //namespace Sequence::HatuneOfTheDead::LuaImpl
+

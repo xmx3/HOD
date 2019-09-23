@@ -1,0 +1,23 @@
+$#include<XmlLoader/MME/Object/ModelKai.h>
+
+typedef std::shared_ptr<MME::Object::ModelKai> InstanceModelKaiSharedPtr;
+
+namespace XmlLoader{ namespace MME { namespace Object {
+
+class ModelKai{
+public:
+	ModelKai();
+	~ModelKai();
+	bool loadStart( const std::string &fileName );
+	bool isReady();
+
+	//tolua++‚Ìd—lã
+	//std::shared_ptr<MME::Object::ModelKai> instance();‚ª
+	//std::shared_ptr<XmlLoader::MME::Object::ModelKai> instance();‚Æ‰ğß‚³‚ê‚Ä‚µ‚Ü‚¤‚Ì‚Å
+	InstanceModelKaiSharedPtr instance();
+
+
+};
+} } }// namespace XmlLoader::MME::Object
+
+

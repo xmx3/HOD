@@ -1,0 +1,17 @@
+$#include<MME/Drawer/CutScene.h>
+
+namespace MME {
+namespace Drawer { namespace CutScene {
+
+void destroy();
+bool isReady();
+	
+void draw();
+	
+void add( const std::shared_ptr<MME::Object::ModelKai> &);
+void add( const std::shared_ptr<MME::Object::PointLight> &);
+void add( const std::shared_ptr<MME::Object::Accessory> &);
+void add( const std::shared_ptr<GameObject::AccessoryUtils::MME::Model>&);
+
+
+} } }// namespace MME::Drawer::CutScene

@@ -1,0 +1,56 @@
+
+$#include"Sequence/HatuneOfTheDead/LuaImpl/State.h"
+
+
+namespace MMD {
+	class CameraAnimation;
+}
+
+namespace XmlLoader{ namespace GameObject{
+	class Enemy;
+	typedef std::shared_ptr<Enemy> EnemySharedPtr;
+} }
+
+
+namespace GameObject{
+	class Enemy;
+	class Player;
+	typedef std::shared_ptr<GameObject::Player> PlayerSharedPtr;
+	typedef std::shared_ptr<GameObject::Stage> StageSharedPtr;
+
+}
+
+
+
+namespace Sequence{
+namespace HatuneOfTheDead{
+namespace LuaImpl{
+class Resource;
+
+class State {
+public:
+	static State* instance();
+	void release();
+
+	bool isReady();
+	bool isClear()const;
+	void update();
+	void draw();
+
+	void reserveEnemySpawn(const std::string &enemyName, float spawnTime, const btTransform& trans);
+
+	void build(Resource*);
+
+	GameObject::Player* getPlayer();
+
+	void setNextSequence(Sequence::Base* next);
+	Sequence::Base* getNextSequence();
+
+	bool needDrawCall()const;
+	void setNeedDrawCall(bool b);
+
+	void resetAll();
+};
+
+}}} //namespace Sequence::HatuneOfTheDead::LuaImpl
+

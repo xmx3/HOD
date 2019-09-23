@@ -1,0 +1,31 @@
+$#include"MMD/MMDDataBase.h"
+$#include"MMD/Animation.h"
+
+
+
+namespace MMD{
+	class MMDDataBase {
+	public:
+		static MMDDataBase* instance();
+		static void destroy();
+
+		//先に作っておくための関数郡
+		//load待ちさせないため
+		//だが、使い勝手が悪い、アセットクラスでも作るべきか
+		static MMD::TemplatePMDSharedPtr loadPMD(const char* filename);
+		static std::shared_ptr<MMD::TemplateVMD> loadVMD(const char* filename);
+
+		static bool isReady();
+
+		//static void buildPMD(const char* filename, CModel* model, bool isEnableBulletPysics );
+
+
+		static MMD::AnimationSharedPtr createAnimationVMD(
+				const char* pmdFilename,
+				const char* vmdFilename,
+				MMD::Bone* bones, unsigned long numBone,
+				MMD::Face* faces, unsigned long numFaces);
+
+		std::shared_ptr<MMD::CameraAnimation> getCameraAnimation(const std::string &vmdFileName)const;
+	};
+}

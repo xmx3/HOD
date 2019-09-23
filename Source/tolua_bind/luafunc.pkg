@@ -1,0 +1,221 @@
+
+
+// 行頭に$がある行は、$を除いた部分が生成されたcppファイルにそのまま出力されます
+// なお、$hfileや$ifileなど、一部例外があります。
+$#include "Lua/LuaHelper.h"
+
+$#pragma warning(push)
+$#pragma warning(disable:4800)
+
+// $pfileで別のpkgファイルをインクルードすることができます。
+
+/*
+$hfile または $cfileで指定されたファイルは、 // tolua_begin　から　// tolua_end　までの部分、
+および // tolua_export のある行 が処理され、
+さらに出力された.cppファイル内で#includeされます。
+*/
+
+// Luaから使用可能にする関数を設定
+module cfunc {
+	extern void ReloadLuaFiles(const char* arg = "");
+	extern bool DoLuaFile(const char* path);
+	extern void WaitInputOnError(const char *mes, const char *postfix);
+	extern const char * GetLuaError();
+}
+
+//使用する標準のヘッダファイルは宣言しなくて大丈夫じゃないか
+//だって元のヘッダファイルをincludeするから
+
+
+$#include "GUI/Manager.h"
+$#include "GUI/Label.h"
+$#include "GUI/IComponent.h"
+$#include "GUI/ImageButton.h"
+$#include <GameLib/Graphics/Texture.h>
+$#include "GUI/Window.h"
+namespace GUI{
+class IComponent;
+
+//GUIMangaer
+class Manager {
+public:
+	static Manager* instance();
+	static void destory();
+	void draw();
+	void add( IComponent* component );
+	void remove( IComponent* component );
+	bool isReady();
+};
+
+//class ISize, IPos;
+
+//class BaseComponent : public IComponent, public ISize, public IPos {
+class BaseComponent : public IComponent {
+public:
+	bool isEnabled() const;
+	void setIsEnabled( bool b );
+
+	bool isDrawAble() const;
+	void setIsDrawAble( bool b );
+
+	virtual void setPos( int x, int y );
+
+	void getPos( int *x, int *y) const;
+
+	void setSize( int sizeX, int sizeY );
+
+	void getSize( int *sizeX, int *sizeY) const;
+	
+	//ボタン上にあるか？
+	bool isHover( int x, int y ) const;
+};
+
+
+class ComponentWithRender : public BaseComponent{
+public:
+	void setFontColor( unsigned int fc );
+
+	void setColor( unsigned int c );
+
+	void setIsEnableDepthTest( bool isdt );
+	void setIsEnableDepthWrite(bool isdw );
+};
+
+class ImageButton : public ComponentWithRender {
+public:
+	ImageButton( 
+		int x, int y,
+		int sizeX, int sizeY,
+		unsigned int color = 0xffffffff,
+		unsigned int fontColor = 0xff000000,
+		float u0=0.f, float v0=0.f,
+		float u1=1.f, float v1=1.f );
+		
+	virtual ~ImageButton();
+
+	bool isPushed() const;
+	//マウスが自身の領域上にあるか
+	bool isHover() const;
+	bool isPushing() const;
+
+	virtual void update();
+	virtual void draw( Manager* mngr );
+
+	void setText( const char *text );
+	void setTexture( GameLib::Graphics::Texture t );
+	void setUV( 
+		float u0, float v0,
+		float u1, float v1 );
+
+	bool isEnabled() const;
+
+	void setIsEnabled( bool b );
+
+	bool isDrawAble() const;
+
+	void setIsDrawAble( bool b );
+
+	virtual void setPos( int x, int y );
+
+	void getPos( int *x, int *y) const;
+
+	void setSize( int sizeX, int sizeY );
+
+	void getSize( int *sizeX, int *sizeY) const;
+
+};
+
+
+//画像と文字。クリックできない
+class Label : public ComponentWithRender {
+public:
+	Label(
+		int x, int y,
+		int sizeX, int sizeY,
+		unsigned int color = 0xffffffff,
+		unsigned int fontColor = 0xff000000,
+		float u0=0.f, float v0=0.f,
+		float u1=1.f, float v1=1.f );
+	virtual ~Label();
+		
+	void setText( const char *text );
+	void setUV( 
+		float u0, float v0,
+		float u1, float v1 );
+};
+
+}//namespace GUI
+
+
+$#include <Telop.h>
+namespace Telop{
+	void insert( const char *text, float start, float duration );
+	//現在表示してる字幕を消去
+	//void eraseNow();
+	//ゼロからスタートしてるのを前提
+	//途中からだと表示されない字幕あり
+	//例　1秒から10秒間表示を2秒からはじめた場合、それは表示されない
+	//void draw( float elapsed );
+	//void setTime(float time );
+	void setFont( GameLib::Scene::Font );
+	void setDefalutDuration( float duration);
+	void setDefalutFontColor( unsigned int);
+	//void setPos( unsigned int x, unsigned int y );
+	bool parse( const char* data, unsigned int size );
+	//テロップを全部再生したか？
+	//ロードと勘違いするかもしれないので
+	//isPlayEnd, isPlayOverといったほうがわかりやすいか？
+	//テロップが何もない場合trueを返す
+	//bool isFinished();
+	//GameLib::FileIO::OutFile write(const char*filename );
+}
+
+$hfile "../GUI/IModalDialog.h"
+$hfile "../GUI/OkDialog.h"
+
+$pfile "bulletPhysics.pkg"
+
+$pfile "MMD/MMDDataBase.pkg"
+$pfile "MMD/TemplateVMD.pkg"
+$pfile "MMD/CameraAnimation.pkg"
+
+$pfile "GameLib/Framework.pkg"
+
+$pfile "GameLib/Graphics/Manager.pkg"
+$pfile "GameLib/Graphics/Texture.pkg"
+
+$pfile "GameLib/Math/Vector4.pkg"
+$pfile "GameLib/Math/Vector3.pkg"
+$pfile "GameLib/Math/Matrix44.pkg"
+$pfile "GameLib/Math/Matrix34.pkg"
+
+$pfile "XmlLoader/MME/Object/ModelKai.pkg"
+$pfile "XmlLoader/GameObject/Accessory.pkg"
+$pfile "XmlLoader/GameObject/Player.pkg"
+$pfile "XmlLoader/GameObject/Enemy.pkg"
+
+$pfile "MME/Manager.pkg"
+$pfile "MME/Drawer/CutScene.pkg"
+$pfile "MME/Drawer/GameDrawer.pkg""
+$pfile "MME/Object/ModelKai.pkg"
+$pfile "MME/StandardEffect.pkg"
+$pfile "MME/PostEffect.pkg"
+
+$pfile "DirectX.pkg"
+
+$pfile "BulletPhysics/Manager.pkg"
+
+$pfile "Sequence/HatuneOfTheDead/LuaImpl/State.pkg"
+$pfile "Sequence/HatuneOfTheDead/LuaImpl/Resource.pkg"
+
+$pfile"GameObject/Player.pkg"
+$pfile"GameObject/Enemy.pkg"
+$pfile"GameObject/Stage.pkg"
+
+
+$pfile"Camera/FixedCamera.pkg"
+
+
+$pfile "HOD/EnemySpawner.pkg"
+
+#pragma warning(pop)

@@ -1,0 +1,74 @@
+$#include"XmlLoader/GameObject/Enemy.h"
+
+
+class btCollisionObject;
+class btTransform;
+
+
+namespace GameLib{
+	namespace PseudoXml{
+		class ConstElement;
+	}
+	namespace FileIO{
+		class InFile;
+	}
+}
+
+namespace GameObject{
+	class Enemy;
+	typedef std::shared_ptr<Enemy> EnemySharedPtr;
+	class ICollider;
+	typedef std::shared_ptr<ICollider> IColliderSharedPtr;
+}
+
+
+namespace GameObjectData{
+	class Status;
+	typedef std::shared_ptr<Status> StatusSharedPtr;
+	class WeaponStatus;
+}
+
+namespace XmlLoader{
+	class Shape;
+	namespace MME{ namespace Object{
+		class ModelKai;
+	}}
+
+namespace GameObject{
+
+class Enemy;
+typedef std::shared_ptr<Enemy> EnemySharedPtr;
+
+class Enemy{
+public:
+	Enemy();
+	~Enemy();
+
+	static EnemySharedPtr createSP();
+
+	void loadXml( const std::string &file );
+
+	bool isReady();
+	
+	::GameObject::EnemySharedPtr instance();
+
+	const std::string & getName()const{
+		return mName;
+	}
+
+};
+} }//end namespace XmlLoader::GameObject
+
+namespace std {
+class shared_ptr
+{
+	TEMPLATE_BIND(T, XmlLoader::GameObject::Enemy);
+	shared_ptr();	
+	~shared_ptr();
+
+	void reset(T*);
+	
+	T* get() const;
+	
+};
+}//end std

@@ -1,0 +1,18 @@
+#pragma once
+#include"Child.h"
+#include"../PointMover.h"
+
+namespace GameObject { namespace PlayerUtils{ namespace Updater { namespace Sword2 {
+
+class Run : public Child , protected PointMover {
+public:
+	Run( Parent* );
+	~Run();
+
+	Base* update( Parent*, float elapsedTime );
+private:
+	MME::Object::ModelKai *mModel;
+	Input::PlayerMouse *mMouse;
+};
+
+} } } } //GameObject::PlayerUtils::Updater::Sword2

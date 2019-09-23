@@ -1,0 +1,33 @@
+$#include<GameLib/Math/Vector4.h>
+
+namespace GameLib{
+namespace Math{
+
+///3次元同次座標として使うべきクラス。そのため演算はほとんど用意しない。
+class Vector4{
+public:
+	Vector4();
+	explicit Vector4( float );
+	Vector4( float, float, float, float = 1.f );
+	Vector4( const Vector4& );
+	explicit Vector4( const GameLib::Math::Vector3& );
+
+	explicit Vector4( const btVector3 & );
+	explicit Vector4( const D3DXVECTOR3 &, float = 1.f );
+	explicit Vector4( const D3DXVECTOR4 & );
+	//explicit Vector4( const float * );
+
+
+	Vector4& operator=( const Vector4& );
+	Vector4& operator=( const GameLib::Math::Vector3& );
+	void set( float, float, float, float = 1.f );
+
+	float& operator[]( int );
+	float operator[]( int ) const;
+
+	float x, y, z, w;
+};
+
+} //namespace Math
+} //namespace GameLib
+

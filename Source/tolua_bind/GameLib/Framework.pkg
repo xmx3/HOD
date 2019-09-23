@@ -1,0 +1,63 @@
+$#include<GameLib/Framework.h>
+
+namespace GameLib{
+
+namespace Graphics{
+	class Texture;
+}
+
+namespace Math{
+	class Vector3;
+	class Vector2;
+	class Matrix44;
+}
+
+class Framework{
+public:
+	enum LoadMode{
+		LOAD_ARCHIVE_FIRST,
+		LOAD_DIRECT_FIRST,
+		LOAD_ARCHIVE_ONLY,
+	};
+	
+	Framework();
+	///インスタンス取得
+	static Framework instance();
+
+	///ユーザ定義関数。作らないとリンクエラー
+	void configure( GameLib::Framework::Configuration* );
+	///ユーザ定義関数。この中でなにもかもやる
+	void update(); 
+
+	///フルスクリーンフラグ設定。
+	void enableFullScreen( bool );
+	///画面幅取得
+	int width() const;
+	///画面高さ取得
+	int height() const;
+	///アプリ名取得
+	const char* title() const;
+	///フルスクリーンですか？
+	bool isFullScreen() const;
+	///フルスクリーン化は禁止されてますか？
+	bool isFullScreenForbidden() const;
+	///ドラッグアンドドロップは有効ですか？
+	bool isDragAndDropEnabled() const;
+	///Frameworkに終了命令を出す
+	void requestEnd();
+	///Frameworkに終了命令が出ているか調べる
+	bool isEndRequested() const;
+	///時刻を取得する(ミリ秒単位)
+	unsigned time() const;
+	///フレームレート取得
+	int frameRate() const;
+	///フレームレート設定(内部で待ちループを回してくれる)
+	void setFrameRate( int );
+	///直前フレーム時間取得(ミリ秒単位)
+	int previousFrameInterval() const;
+	///マウスの移動は制限されてるか?
+	bool isClipCursorEnabled()const;
+
+};
+
+} //namespace GameLib

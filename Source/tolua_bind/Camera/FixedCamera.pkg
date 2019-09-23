@@ -1,0 +1,17 @@
+$#include"Camera/FixedCamera.h"
+
+namespace Camera {
+	class FixedCamera : public ICamera {
+	public:
+		FixedCamera(
+			const D3DXVECTOR3 &pos,
+			const D3DXVECTOR3 &lookAt,
+			const D3DXVECTOR3 &up,
+			float viewAngleInDegree,
+			float zNear,
+			float zFar);
+		virtual ~FixedCamera();
+		void update(float elapsedTime);
+	};
+}
+

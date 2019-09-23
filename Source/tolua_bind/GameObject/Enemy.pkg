@@ -1,0 +1,95 @@
+$#include"GameObject/Enemy.h"
+
+class btRigidBody;
+class btSphereShape;
+class btBoxShape;
+class btTransform;
+
+typedef std::shared_ptr<btBoxShape> BtBoxShapeSharedPtr;
+
+
+namespace GameObjectData{
+	class Status;
+	class WeaponStatus;
+}
+
+namespace GUI{
+	class Label;
+}
+
+namespace MMD{
+	class HumanModel;
+}
+
+namespace MME{ namespace Object {
+	class ModelKai;
+	typedef std::shared_ptr<ModelKai> ModelKaiSharedPtr;
+} }
+
+namespace Component {
+	class RigidBodyComponent;
+	typedef std::shared_ptr<RigidBodyComponent> RigidBodyComponentSharedPtr;
+}
+
+namespace GameObject {
+
+class Enemy;
+typedef std::shared_ptr<Enemy> EnemySharedPtr;
+
+class Enemy : public  BaseObject {
+public:
+	static EnemySharedPtr create(
+		float mass,
+		MME::Object::ModelKaiSharedPtr model,
+		BtBoxShapeSharedPtr shape,
+		BtMotionStateSharedPtr motionState,
+		BtRigidBodySharedPtr rigidbody,
+		GameObjectData::StatusSharedPtr status );
+
+	virtual ~Enemy();
+	
+	virtual const RTTI & getRTTI() const;
+	static const RTTI rtti;;
+
+	void postdraw() const;
+
+	void update(float elapsedTime);
+
+	virtual void removeFromWorld();
+	virtual void addToWorld();
+
+	virtual void onCollisionEnter( btPersistentManifold *manifold, btCollisionObject *me, btCollisionObject *obj );
+	
+	bool isDied()const;
+
+	void updateWhenDied( float );
+
+	btCollisionObject* getBtCollisionObject();
+
+	const btCollisionObject* getConstBtCollisionObject()const;
+
+	const btTransform & getWorldTransform() const;
+
+	btTransform & getWorldTransform();
+
+	bool isInWorld()const;
+
+};
+}//end namespace GameObject
+
+
+
+namespace std {
+class shared_ptr
+{
+	TEMPLATE_BIND(T, GameObject::Enemy);
+	shared_ptr();	
+	~shared_ptr();
+
+	void reset(T*);
+	
+	T* get() const;
+	
+};
+}//end std
+

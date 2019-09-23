@@ -1,0 +1,48 @@
+$#include"MMD/CameraAnimation.h"
+
+
+struct D3DXMATRIX;
+struct D3DXVECTOR3;
+namespace MMD {
+	class CameraOneFrameData;
+
+	class CameraAnimation {
+	public:
+		CameraAnimation();
+		~CameraAnimation();
+
+		void insert(const CameraOneFrameData &framedata);
+		void reserve(unsigned int size);
+		void shrink_to_fit();
+		
+		void load(const std::string &vmdFileName);
+
+		bool isOver(float time)const;
+		bool isReady();
+
+		//カメラに必要なパラメーターを計算する
+		//frameではなくて時間で指定
+		//内部でフレームに変換する
+		void calc(
+			float time,
+			D3DXVECTOR3 *pCameraPos,
+			D3DXVECTOR3 *pLookAt,
+			D3DXVECTOR3 *pUp,
+			float *pViewAngle);
+	};
+}
+
+
+namespace std {
+class shared_ptr
+{
+	TEMPLATE_BIND(T, MMD::CameraAnimation);
+	shared_ptr();	
+	~shared_ptr();
+
+	void reset(T*);
+	
+	T* get() const;
+	
+};
+}//end std

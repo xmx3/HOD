@@ -1,0 +1,71 @@
+$#include"GameObject/Stage.h"
+
+namespace MME {
+	namespace Object{
+		class Accessory;
+		typedef std::shared_ptr<Accessory> AccessorySharedPtr;
+
+	}
+}
+
+namespace GameLib{
+	namespace Math{
+		class Vector3;
+		class Matrix44;
+	}
+}
+class btRigidBody;
+
+namespace GameObject {
+class Stage;
+typedef std::shared_ptr<Stage> StageSharedPtr;
+
+class Stage : public GameObject::BaseObject {
+public:
+	static StageSharedPtr create(const char * xmlInitStageFile );
+	virtual ~Stage();
+	void drawUsingGameLib();
+
+	void createBvhTriangleMesh();
+	
+	virtual const RTTI & getRTTI() const;
+    static const RTTI rtti;
+
+
+	
+	virtual btCollisionObject* getBtCollisionObject(){
+		return NULL;
+	}
+
+	virtual void removeFromWorld();
+	virtual void addToWorld();
+	
+	bool isClear()const {
+		return mIsClear;
+	}
+	void handleEventThatDefeatedAllEnemies(){
+		mIsClear = true;
+	}
+
+	bool isReady();
+};
+
+
+}//end namespace GameObject
+
+
+namespace std {
+class shared_ptr
+{
+	TEMPLATE_BIND(T, GameObject::Stage);
+	shared_ptr();	
+	~shared_ptr();
+
+	void reset();
+	
+	T* get() const;
+	
+};
+}//end std
+
+

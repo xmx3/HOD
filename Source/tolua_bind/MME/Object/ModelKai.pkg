@@ -1,0 +1,75 @@
+$#include<MME/Object/ModelKai.h>
+
+
+namespace std {
+class shared_ptr
+{
+	TEMPLATE_BIND(T, MME::Object::ModelKai);
+	shared_ptr();	
+	~shared_ptr();
+
+	void reset();
+	
+	T* get() const;
+	
+};
+}//end std
+
+
+
+namespace MME{
+	namespace Object{
+
+//MMD::AnimationModelのラッパークラス
+class ModelKai : public IObject{
+public:
+	//shared_from_thisはコンストラクタ内で使えないのでこちらでMME::Managerに登録
+	static std::shared_ptr<MME::Object::ModelKai> create( const std::shared_ptr<MMD::TemplatePMD> &pmd, bool enablePhysics, float heightOffset );
+
+	virtual ~ModelKai();
+
+	virtual void draw()const;
+
+	//vector3ではなくてfloatなのはMMEとの互換性を取るため
+	virtual float getScale()const;
+	//void setScale( float scale );
+
+	virtual float getFaceValue(const std::string &faceName )const;
+	
+	virtual const D3DXMATRIX & getBoneMatrix( const std::string &boneName )const;
+
+	virtual const std::string& getModelFileName()const;
+
+	void update( const D3DXMATRIX & world, float elapsed );
+
+	bool isReady();
+
+	//void loadPMDFromDB( const char *fileName, bool enablePhysics );
+
+	//初期位置をセット(RigidBodyのため).
+	void init( const D3DXMATRIX &world, const std::string &animName );
+	
+	bool isAnimOver() const;
+	
+	void changeAnimation( const std::string &animName );
+	//void addHookToAnim( const std::string &toAnimName, const MMD::AnimationState::Hook::IHookSharedPtr &hook );
+	void addAnimState( const std::string &animationName, const MMD::AnimationState::IAnimationStateSharedPtr &anim );
+	
+	GameObject::AccessorySharedPtr getAccessory( const std::string &name );
+	void addAccessory( const std::string &name, const GameObject::AccessorySharedPtr &accessory ); 	
+
+	float getFrame() const;
+
+	MMD::Bone* getBone( const char* boneName );
+	MMD::AnimationModel* getAnimationModel();
+
+	//物理世界に追加
+	void addToWorld();
+	//物理世界から削除
+	void removeFromWorld();
+
+};
+
+}// end namespace Object
+}// end namespace MME
+

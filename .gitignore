@@ -1,0 +1,55 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+
+
+41_HOD.sdf
+41_HOD.suo
+41_HOD.sln
+41_HOD.VC.db
+data.bin
+/.vs
+/Bin
+/Data
+/Debug
+/ipch
+/Lib
+/Licence
+/Media
+/Obj
+/Project
+/Recycle Bin
+/Script
+/ShaderTest
+/Tool
+

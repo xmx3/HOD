@@ -1,0 +1,43 @@
+$#include"XmlLoader/GameObject/Accessory.h"
+
+class btCollisionObject;
+
+namespace GameLib{
+	namespace PseudoXml{
+		class ConstElement;
+	}
+}
+
+namespace GameObject{
+	class Accessory;
+	typedef std::shared_ptr<Accessory> AccessorySharedPtr;
+	namespace AccessoryUtils{
+		namespace MME{
+			class TemplateModel;
+			class Model;
+			typedef std::shared_ptr<Model> ModelSharedPtr;
+		}
+	}
+}
+
+namespace GameObjectData{
+	class Status;
+	typedef std::shared_ptr<Status> StatusSharedPtr;
+}
+
+namespace XmlLoader{
+	class Shape;
+	typedef std::shared_ptr<Shape> ShapeSharedPtr;
+namespace GameObject{
+class Accessory{
+public:
+	Accessory();
+	~Accessory();
+	bool isReady();
+	::GameObject::AccessorySharedPtr instance(
+		btCollisionObject *owner,
+		const btTransform &startTrans
+	);
+	//const std::string & getName()const;
+};
+} }//end namespace XmlLoader::GameObject

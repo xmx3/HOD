@@ -1,0 +1,69 @@
+$#include"MMD/TemplateVMD.h"
+
+
+$namespace {
+$	typedef std::pair< unsigned long, boost::shared_array<MMD::BoneKey> > PairSizeAndBoneKeyArray;
+$	typedef std::pair< unsigned long, boost::shared_array<MMD::FaceKey> > PairSizeAndFaceKeyArray;
+$	typedef const std::string ConstString;
+$	typedef std::shared_ptr<ConstString> ConstStringSharedPtr; 
+$ }
+
+namespace MMD {
+
+	class TemplateVMD;
+	typedef std::shared_ptr<TemplateVMD> TemplateVMDSharedPtr;
+
+	class Bone;
+	class Face;
+
+	class TemplateBoneKey;
+	class TemplateFaceKey;
+
+	class BoneKey;
+	class FaceKey;
+
+	class Animation;
+	typedef std::shared_ptr<Animation> AnimationSharedPtr;
+
+	class CameraAnimation;
+	typedef std::shared_ptr<CameraAnimation> CameraAnimationSharedPtr;
+
+	class TemplateVMD {
+	public:
+		explicit TemplateVMD(const char * name);
+		~TemplateVMD();
+
+
+		MMD::AnimationSharedPtr create(
+			MMD::Bone* bones, unsigned long numBone,
+			MMD::Face* faces, unsigned long numFaces);
+		
+		//first arrayNum, second array
+		PairSizeAndBoneKeyArray createBoneKeyArray(Bone* bones, unsigned long numBone)const;
+
+		//first arrayNum, second array
+		PairSizeAndFaceKeyArray createFaceKeyArray(Face* Faces, unsigned long numFaces)const;
+		
+		ConstStringSharedPtr getFileName()const;
+
+		bool isReady();
+
+		std::shared_ptr<MMD::CameraAnimation> getCameraAnimation()const;
+
+	};
+}//end namespace MMD
+
+namespace std {
+class shared_ptr
+{
+	TEMPLATE_BIND(T, MMD::TemplateVMD);
+	shared_ptr();	
+	~shared_ptr();
+
+	void reset();
+	
+	T* get() const;
+	
+};
+}//end std
+

@@ -1,0 +1,57 @@
+$#include"XmlLoader/GameObject/Player.h"
+
+class btCollisionObject;
+class btTransform;
+
+
+namespace GameLib {
+	namespace FileIO {
+		class InFile;
+	}
+}
+
+namespace GameObject {
+	class Player;
+	typedef std::shared_ptr<Player> PlayerSharedPtr;
+	class ICollider;
+	typedef std::shared_ptr<ICollider> IColliderSharedPtr;
+}
+
+
+
+namespace GameObjectData {
+	class Status;
+	typedef std::shared_ptr<Status> StatusSharedPtr;
+	class WeaponStatus;
+}
+
+namespace XmlLoader {
+	class Shape;
+	namespace MME {
+		namespace Object {
+			class ModelKai;
+		}
+	}
+	namespace Camera {
+		class PlayerCamera;
+	}
+
+	namespace GameObject {
+		class Player {
+		public:
+			Player();
+			~Player();
+
+			void loadXml(const std::string &file);
+
+			bool isReady();
+
+			GameObject::PlayerSharedPtr instance();
+
+			const std::string & getName()const {
+				return mName;
+			}
+		};
+	}
+}//end namespace XmlLoader::GameObject
+

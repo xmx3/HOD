@@ -1,0 +1,33 @@
+$#include<MME/PostEffect.h>
+
+namespace MME{
+	
+class PostEffect : public BaseEffect {
+public:
+	PostEffect( const std::string &fxFileName, GameLib::FileIO::InFile file, LPD3DXEFFECTPOOL pool );
+	virtual ~PostEffect();
+
+	void preDraw();
+	void postDraw();
+
+};
+
+}
+
+namespace std {
+class shared_ptr
+{
+	TEMPLATE_BIND(T, MME::PostEffect);
+	shared_ptr();	
+	~shared_ptr();
+
+	void reset();
+	
+	T* get() const;
+	
+};
+}//end std
+
+
+
+

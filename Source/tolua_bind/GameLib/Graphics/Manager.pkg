@@ -1,0 +1,154 @@
+$#include <GameLib/Graphics/Manager.h>
+$#include <GameLib/Graphics/AnimatedVertexBoneBuffer.h>
+$#include <GameLib/Graphics/VertexBuffer.h>
+$#include <GameLib/Graphics/IndexBuffer.h>
+
+namespace GameLib{
+namespace Graphics{
+
+//グローバル列挙群
+enum BlendMode{
+	BLEND_OPAQUE,
+	BLEND_LINEAR,
+	BLEND_ADDITIVE,
+
+	BLEND_MAX,
+};
+
+enum CullMode{
+	CULL_NONE,
+	CULL_FRONT,
+	CULL_BACK,
+
+	CULL_MAX,
+};
+
+enum PrimitiveType{
+	PRIMITIVE_TRIANGLE,
+	PRIMITIVE_LINE,
+	PRIMITIVE_POINT,
+};
+
+enum TextureFilter{
+	TEXTURE_FILTER_POINT,
+	TEXTURE_FILTER_LINEAR,
+};
+
+enum LightingMode{
+	LIGHTING_NONE,
+	LIGHTING_PER_VERTEX,
+	LIGHTING_PER_PIXEL,
+};
+
+} //namespace Graphics
+} //namespace GameLib
+
+
+struct IDirect3DDevice9;
+
+namespace GameLib{	
+namespace Graphics{
+
+class Manager{
+public:
+	Manager();
+	static Manager instance();
+
+	void setVertexBuffer( GameLib::Graphics::VertexBuffer );
+	void setIndexBuffer( GameLib::Graphics::IndexBuffer );
+	void setAnimatedVertexBoneBuffer( GameLib::Graphics::AnimatedVertexBoneBuffer );
+	void setTexture( GameLib::Graphics::Texture );
+
+	void enableDepthTest( bool );
+	void enableDepthWrite( bool );
+	void setBlendMode( GameLib::Graphics::BlendMode );
+	void setCullMode( GameLib::Graphics::CullMode );
+	void setTextureFilter( GameLib::Graphics::TextureFilter );
+	///透視変換ビュー変換行列セット。
+	void setProjectionViewMatrix( const GameLib::Math::Matrix44& m );
+	//void setViewMatrix( const GameLib::Math::Matrix34& m );
+	//void setProjectionMatrix( const GameLib::Math::Matrix44& m );
+	
+	///ワールド変換行列セット
+	void setWorldMatrix( const GameLib::Math::Matrix34& m );
+
+	const GameLib::Math::Matrix44& getProjectionViewMatrix() const ;
+	//const GameLib::Math::Matrix44& getProjectionMatrix() const ;
+	//const GameLib::Math::Matrix34& getViewMatrix() const ;
+	const GameLib::Math::Matrix34& getWorldMatrix() const ;
+
+
+	///ビューポート設定
+	void setViewport( int x, int y, int width, int height );
+	///ビューポート取得(0でないものにだけ入れるので欲しいものだけポインタをセット)
+	void getViewport( int* xOut, int* yOut, int* widthOut, int* heightOut );
+
+	///設定したテクスチャ、頂点バッファ、インデクスバッファで描画
+	void drawIndexed(
+		int offset, 
+		int primitiveNumber, 
+		PrimitiveType = PRIMITIVE_TRIANGLE );
+	///設定したテクスチャ、頂点バッファで描画
+	void draw( 
+		int offset, 
+		int primitiveNumber, 
+		PrimitiveType = PRIMITIVE_TRIANGLE );
+	///全画面にテクスチャを貼り付け
+	void blendToScreen( Texture );
+	///フルスクリーン化
+	void enableFullScreen( bool );
+	///描画バッファ幅を返す
+	int width() const;
+	///描画バッファ高さを返す
+	int height() const;
+	///フルスクリーン時のウィンドウ幅を返す
+	int fullScreenWindowWidth() const;
+	///フルスクリーン時のウィンドウ高さを返す
+	int fullScreenWindowHeight() const;
+	///フレーム番号を返す
+	unsigned frameId() const;
+	///スクリーンショットを取る(拡張子でDDS,TGA自動判別)。保存タイミングは描画終了後。
+	void captureScreen( const char* filename );
+
+	//ライティング関係
+	///ピクセルシェーダを有効化する
+	void setLightingMode( LightingMode );
+	///ライト位置
+	void setLightPosition( int index, const GameLib::Math::Vector3& position );
+	///ライト強度(100なら100mの距離で1の明るさになる。強度Iとして、明るさは「I/距離」で決まる)
+	void setLightIntensity( int index, float intensity );
+	///ライト色
+	void setLightColor( int index, const GameLib::Math::Vector3& );
+	///視点位置
+	void setEyePosition( const GameLib::Math::Vector3& position );
+	///ディフューズカラー
+	void setDiffuseColor( const GameLib::Math::Vector3& );
+	///スペキュラ色
+	void setSpecularColor( const GameLib::Math::Vector3& );
+	///発光色
+	void setEmissionColor( const GameLib::Math::Vector3& );
+	///アンビエント色
+	void setAmbientColor( const GameLib::Math::Vector3& );
+	///透明度設定
+	void setTransparency( float );
+	///スペキュラの鋭さ(大きいほど鋭い。数字の意味は別の本を読もう)
+	void setSpecularSharpness( float );
+	/// 
+	IDirect3DDevice9* dxDevice();
+
+	GameLib::Graphics::LightingMode getLightingMode() const;
+	
+	//void sendLightingParameters();
+	//void sendMatrices();
+
+	void sendWorldMatrixArray( const GameLib::Math::Matrix34 *matArray, unsigned int matrixArrayLength  );
+	void enableVertexBlend( bool enable );
+
+	//assertするだけ
+	//MME使用中にレジスタに書き込んで欲しくないので
+	//MME使用中にはGameLib系の描画は禁止
+	void enableMME(bool enable);
+};
+
+} //namespace Graphics
+} //namespace GameLib

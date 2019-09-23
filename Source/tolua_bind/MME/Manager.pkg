@@ -1,0 +1,161 @@
+$#include<MME/Manager.h>
+
+namespace MME {
+
+
+class Manager {
+public:
+	static MME::Manager* instance();
+	void destroy();
+
+	//ゲームオブジェクト毎にfxファイルを指定したほうが便利だろうと思ったが、
+	//(同じ初音ミクモデルでも違うエフェクトとが適用できるから)
+	//材質毎に指定できるようにしたほうが便利な場面もあるよねとおもったが
+	//後でエフェクトファイルごとにまとめて描画するので、GameObjectを渡すのは必須。
+	//死んだ場合(メモリ開放)をどうするか(weak_ptrか？)
+	//描画順が名前順(priorityを作るべきか？ とりあえずは名前を工夫して描画順をコントロールしろ)
+	//std::shared_ptr<MME::StandardEffect> registStandardEffect( const char *fxFileName, GameLib::FileIO::InFile file );
+
+
+	//ポストエフェクトマップに登録
+	//なければ新たに作る
+	//エラーが起きてたら0を返す
+	//描画順が名前順(priorityを作るべきか？ とりあえずは名前を工夫して描画順をコントロールしろ)
+	//std::shared_tr<MME::PostEffect> registPostEffect( const char *fxFileName, GameLib::FileIO::InFile file );
+
+	bool isReady();
+
+	void drawAll();
+
+	void drawIndexed(
+		int offset, 
+		int primitiveNumber );
+	
+	void draw( 
+		int offset, 
+		int primitiveNumber );
+
+	void setVertexBuffer( GameLib::Graphics::VertexBuffer );
+	void setIndexBuffer( GameLib::Graphics::IndexBuffer );
+	void setAnimatedVertexBoneBuffer( GameLib::Graphics::AnimatedVertexBoneBuffer );
+	
+	void setTexture( GameLib::Graphics::Texture );
+	void setToonTexture(  GameLib::Graphics::Texture );
+	void setSphereTexture(  GameLib::Graphics::Texture );
+	void setSphereTextureAdditive( bool isAdditive );
+
+	//ビュー変換行列セット
+	void setViewMatrix( const D3DXMATRIX& view );
+	///透視変換行列セット
+	void setProjectionMatrix( const D3DXMATRIX& proj );
+	///ワールド変換行列セット
+	void setWorldMatrix( const D3DXMATRIX& world );
+
+	//ビュー変換行列ゲット
+	const D3DXMATRIX & Manager::getViewMatrix()const;
+	//透視変換行列ゲット
+	const D3DXMATRIX & Manager::getProjectionMatrix()const;
+	//ワールド変換行列ゲット
+	const D3DXMATRIX & Manager::getWorldMatrix()const;
+
+
+	//ライトビュー変換行列セット
+	void setLightViewMatrix( int index, const D3DXMATRIX& lightView );
+	///ライト透視変換行列セット
+	void setLightProjectionMatrix( int index, const D3DXMATRIX& lightProjection );
+	///ライトワールド変換行列セット
+	void setLightWorldMatrix( int index, const D3DXMATRIX& lightWorld );
+
+	///ライト位置
+	void setLightPosition( int index, const GameLib::Math::Vector3& position );
+	///ライト向き
+	void setLightDirection( int index, const GameLib::Math::Vector3& dir );
+	///ライト強度(100なら100mの距離で1の明るさになる。強度Iとして、明るさは「I/距離」で決まる)
+	//ライト向きに対して正規化して書けるだけの予定
+	//void setLightIntensity( int index, float intensity );
+	
+	///ライト色
+	//とりあえず全部(diffuse, ambient, specular)同じ値にする
+	void setLightColor( int index, const GameLib::Math::Vector4& );
+	void setLightDiffuse( int index, const GameLib::Math::Vector4 &d );
+	void setLightAmbient( int index, const GameLib::Math::Vector4 &a );
+	void setLightSpecular( int index, const GameLib::Math::Vector4 &s );
+
+	///視点位置
+	void setEyePosition( const GameLib::Math::Vector3& position );
+	void setEyeDirection( const GameLib::Math::Vector3& dir );
+	///ディフューズカラー
+	void setDiffuseColor( const GameLib::Math::Vector4& );
+	///スペキュラ色
+	void setSpecularColor( const GameLib::Math::Vector4& );
+	///発光色
+	void setEmissionColor( const GameLib::Math::Vector4& );
+	///アンビエント色
+	void setAmbientColor( const GameLib::Math::Vector4& );
+	///輪郭色
+	void setEdgeColor( const GameLib::Math::Vector4& );
+
+	void setZNear( float );
+	void setZFar( float );
+
+	///透明度設定(gameLibの互換性のために、作ったがいらないな。)
+	//diffuse, specular, ambientのアルファ値にセットする
+	//void setTransparency( float );
+
+	void setToonColor( const GameLib::Math::Vector4& );
+
+
+	///スペキュラの鋭さ(大きいほど鋭い
+	void setSpecularSharpness( float );
+	void sendWorldMatrixArray( const D3DXMATRIX *WorldMatrices, int size );
+	void enableVertexBlend( bool enable );
+
+	GameLib::Math::Vector3 getLightDirection( int index ) const;
+	
+	
+	void sendParamsToGameLibGraphicsManager();
+
+	bool canDraw(
+		MME::UseTexture useTexture,
+		MME::UseSphereMap useSphereMap,
+		MME::UseToon useToon,
+		unsigned int materialIndex )const;
+	
+	MME::MMDPass getCurrentPass()const;
+
+	void getCurrentPass(
+		MME::MMDPass *pass,
+		MME::UseTexture *useTexture,
+		MME::UseSphereMap *useSphereMap,
+		MME::UseToon *useToon,
+		MME::UseSelfShadow *useSelfShadow )const;
+
+	
+	void setCurrentEffect( MME::BaseEffect *effect );
+
+	void sendParams( MME::BaseEffect* mme  );
+
+	//offscreen内は探さない
+	//見つからない場合はnullptrを返す
+	std::shared_ptr<MME::StandardEffect> findStandardEffect( const std::string &fullFileName );
+	//offscreen内は探さない
+	//見つからない場合はnullptrを返す
+	std::shared_ptr<MME::PostEffect> findPostEffect( const std::string &fullFileName );
+
+	//offscreenないも探す
+	//見つからない場合はnullptrを返す
+	std::shared_ptr<MME::StandardEffect> findStandardEffect( const std::string &fullFileName, const std::string &offScreenName, const std::string &effectFileNameInOffScreen );
+
+	//void clearAllObjects();
+
+	//デバイスロスト時のための開放処理
+	void backup();
+	//デバイスロスト時のためのリソース再確保
+	void recover();
+
+	void beginShadow();
+	void endShadow();
+
+};
+}//end namespace MME
+
