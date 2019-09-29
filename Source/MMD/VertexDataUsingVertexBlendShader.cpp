@@ -714,7 +714,8 @@ void VertexDataUsingVertexBlendShader::drawByMME(
 		UseTexture useTexture = 
 			static_cast<const GameLib::Graphics::Texture &>(pMaterial->texture_) ? ENABLE_TEXTURE : DISABLE_TEXTURE;
 		//bool useToon = static_cast<bool>( (void*)pMaterial->toonTexture_ );
-		UseToon useToon = pMaterial->toonIndex_ != 0xff ? ENABLE_TOON : DISABLE_TOON;
+		//UseToon useToon = pMaterial->toonIndex_ != 0xff ? ENABLE_TOON : DISABLE_TOON;
+		UseToon useToon = ENABLE_TOON;
 		UseSphereMap useSphereMap =
 			static_cast<const GameLib::Graphics::Texture &>(pMaterial->sphereTexture_) ? ENABLE_SPHEREMAP : DISABLE_SPHEREMAP;
 		

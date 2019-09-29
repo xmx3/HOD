@@ -90,11 +90,14 @@ namespace XmlLoader { namespace GameObject {
 
 			//static const btVector3 kDefalutInitPos( 0.f, 20.f, 0.f );
 			static const btVector3 kDefalutInitPos(-80.f, 50.f, 0.f);
-			
+			btTransform transform(btTransform::getIdentity());
+			transform.getBasis(). setEulerZYX( 0.f, 3.14 / 2.f, 0.f);
+			transform.getOrigin() = kDefalutInitPos;
+
 			// MotionStateを作成する。剛体の姿勢制御をするもの	
 			std::shared_ptr<btDefaultMotionState> pMotionState( 
-				new btDefaultMotionState(btTransform(btMatrix3x3::getIdentity(), kDefalutInitPos)));
-			//なんとなくバグの原因かなと思ったので実際は変わらない
+				new btDefaultMotionState(transform));
+			//バグの原因
 			//けどバレット関連でmakeshardは絶対やめたほうがいい
 			//std::make_shared<btDefaultMotionState>(btTransform(btMatrix3x3::getIdentity(), kDefalutInitPos));
 			

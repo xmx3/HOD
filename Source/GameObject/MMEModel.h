@@ -25,8 +25,8 @@ public:
 
 	static std::shared_ptr<MMEModel> create(){
 		std::shared_ptr<MMEModel> result = std::make_shared<MMEModel>();
-		//MME::Manager::instance()->regist( result, "ShaderTest/Basic/full_before.fx" );
-		//MME::Manager::instance()->regist( result, "ShaderTest/Basic/full_toon.fx" );
+		//MME::Manager::instance()->regist( result, "Shader/Basic/full_before.fx" );
+		//MME::Manager::instance()->regist( result, "Shader/Basic/full_toon.fx" );
 		//MME::Manager::instance()->regist( result, NULL );
 
 		 return result;

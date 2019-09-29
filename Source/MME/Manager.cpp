@@ -23,23 +23,23 @@
 
 
 namespace{
-	static const char *skDefalutFxFileName = "ShaderTest/Basic/deffered_shading_luminous/basic.fx";
-	//static const char *skDefalutFxFileName = "ShaderTest/Basic/full.fx";//defalut
-	//static const char *skDefalutFxFileName = "ShaderTest/Basic/deffered_shading/basic.fx";
-	//static const char *skDefalutFxFileName = "ShaderTest/Basic/deffered_shading_shadow/basic.fx";
+	static const char *skDefalutFxFileName = "Shader/Basic/deffered_shading_luminous/basic.fx";
+	//static const char *skDefalutFxFileName = "Shader/Basic/full.fx";//defalut
+	//static const char *skDefalutFxFileName = "Shader/Basic/deffered_shading/basic.fx";
+	//static const char *skDefalutFxFileName = "Shader/Basic/deffered_shading_shadow/basic.fx";
 	
-	//static const char *skDefalutPostFxFileName = NULL;
-	static const char *skDefalutPostFxFileName = "ShaderTest/Basic/deffered_shading_luminous/postEffect.fx";
+	static const char *skDefalutPostFxFileName = NULL;
+	//static const char *skDefalutPostFxFileName = "Shader/Basic/deffered_shading_luminous/postEffect.fx";
 	
-	//static const char *skFXAAFileName = NULL;
-	static const char *skFXAAFileName = "ShaderTest/Fxaa/fxaa.fx";
+	static const char *skFXAAFileName = NULL;
+	//static const char *skFXAAFileName = "Shader/Fxaa/fxaa.fx";
 	
 
 	static const char *skGaussianFxFileName= NULL;
-	//static const char *skGaussianFxFileName= "ShaderTest/Gaussian/Gaussian.fx";
+	//static const char *skGaussianFxFileName= "Shader/Gaussian/Gaussian.fx";
 
-	//static const char *skPointLightFxFileName=NULL;
-	static const char *skPointLightFxFileName="ShaderTest/Basic/DSPoinghtLight.fx";
+	static const char *skPointLightFxFileName=NULL;
+	//static const char *skPointLightFxFileName="Shader/Basic/DSPoinghtLight.fx";
 
 
 	static const bool skEnableFileter=false;
@@ -403,8 +403,8 @@ void Manager::drawAll()
 
 	drawShadowMapBuffer();
 
-	//drawOffScreen( "ShaderTest/AutoLuminous4/AutoLuminous.fx", "AL_EmitterRT" );
-	//drawOffScreen( "ShaderTest/AutoLuminous4/AutoLuminousBasic.fx", "ALB_EmitterRT" );
+	//drawOffScreen( "Shader/AutoLuminous4/AutoLuminous.fx", "AL_EmitterRT" );
+	//drawOffScreen( "Shader/AutoLuminous4/AutoLuminousBasic.fx", "ALB_EmitterRT" );
 
 	sendParamsToGameLibGraphicsManager();
 

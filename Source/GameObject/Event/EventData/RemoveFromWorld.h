@@ -11,17 +11,17 @@ namespace EventData {
 	typedef std::shared_ptr<RemoveFromWorld> RemoveFromWorldSharedPtr;
 class RemoveFromWorld : public IEventData {
 public:
-	static IEventDataPtr create(GameObject::BaseObjectObjectSharedPtr obj ){
+	static IEventDataPtr create(GameObject::BaseObjectSharedPtr obj ){
 		IEventDataPtr ev( new RemoveFromWorld(obj) );
 		return ev;
 	}
-	RemoveFromWorld(GameObject::BaseObjectObjectSharedPtr o)
+	RemoveFromWorld(GameObject::BaseObjectSharedPtr o)
 		:mObj(o)
 	{}
 	virtual ~RemoveFromWorld(){}
 	RTTI_HEADER_IMPL(RemoveFromWorld);
 
-	GameObject::BaseObjectObjectSharedPtr mObj;
+	GameObject::BaseObjectSharedPtr mObj;
 
 	RemoveFromWorld(const RemoveFromWorld &) = delete;
 	void operator=(const RemoveFromWorld &) = delete;

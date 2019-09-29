@@ -50,6 +50,11 @@ Resource::Resource()
 {
 }
 Resource::~Resource() {
+	while (mTemplatePlayer && !mTemplatePlayer->isReady()) {}
+	while (mStage && !mStage->isReady()) {}
+	auto hodcamera = std::dynamic_pointer_cast< Camera::HodCamera, Camera::ICamera>(mCameraAnimation);
+
+	while (hodcamera && !hodcamera->isReady()) {}
 	mTemplatePlayer.reset();
 	mStage.reset();
 	mCameraAnimation.reset();

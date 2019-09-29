@@ -41,7 +41,11 @@ Base* Swing::update( Parent *parent, float elapsedTime ){
 		{
 			++mCurrentActionIndex;
 			mModel->changeAnimation( "swing4" );
-		} else { 
+		}
+		else if (mCurrentActionIndex == 4) {
+			++mCurrentActionIndex;
+			mModel->changeAnimation("swing_end");
+		} else {
 			mModel->changeAnimation( "stand" );
 			return new Stand( parent );
 		}

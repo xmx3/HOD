@@ -22,6 +22,7 @@
 
 #include"GameObject/Event/EventData/AddToWorld.h"
 #include"GameObject/Event/EventData/RemoveFromWorld.h"
+#include"GameObject/Event/EventData/KilledEnemy.h"
 #include"GameObject/Event/Manager.h"
 
 #include"XmlFiles.h"
@@ -93,7 +94,10 @@ Enemy::Enemy()
 	mModel(),
 	mElapsedTimeAfterLunch(0.f),
 	mHpBar(NULL),
-	mHpBackGroundBar(NULL)
+	mHpBackGroundBar(NULL),
+	mDamageValueForChain(0),
+	mChain(0)
+
 {
 	mFilterGroup = BulletPhysics::EnemyFilter;
 	mFilterMask = BulletPhysics::AllFilter & ~BulletPhysics::MMDObjectFilter;
@@ -265,12 +269,12 @@ void Enemy::postdraw() const {
 
 		GameLib::Vector4 pos( toVector3(w.getOrigin()) );
 
-		drawHpBar( 
-			mHpBar, mHpBackGroundBar,
-			pos,
-			mStatus->hp.rate(),
-			hpColor,
-			hpBgColor );
+		//drawHpBar( 
+		//	mHpBar, mHpBackGroundBar,
+		//	pos,
+		//	mStatus->hp.rate(),
+		//	hpColor,
+		//	hpBgColor );
 	}
 }
 
@@ -337,17 +341,24 @@ void Enemy::update( float elapsedTime ) {
 void Enemy::onCollisionEnter( btPersistentManifold *manifold, btCollisionObject *me, btCollisionObject *obj ) {
 	
 	auto rb = static_cast<Component::RigidBodyComponent*>(obj->getUserPointer());
-	//const RTTI &rtti = rb->getOwner()->getRTTI();
+	const RTTI &rtti = rb->getOwner()->getRTTI();
 	//TRACE1("Enemy::onCollisionEnter: %s\n", rtti.getClassName().c_str());
 
 	auto *collide = rb->getOwner();
 	auto *weapon = collide->getWeaponStatus();
 
 	if (collide->canDamage()) {
-		
-		float damage = collide->calculateDamage();
-		//DamageType d = collide->getDamageType();
 		takeDamage(collide);
+	}
+	else if ( rtti.isExactly(Enemy::rtti) ){
+		if (Enemy *enemy = dynamic_cast<Enemy*>(collide)) {
+			if (enemy->isDied()) {
+				mStatus->hp.add(-enemy->mDamageValueForChain);
+				mChain = std::max( mChain, enemy->mChain);
+				mDamageValueForChain =  std::max(mDamageValueForChain, static_cast<int>(enemy->mDamageValueForChain*0.4f));
+			}
+		}
+
 	}
 
 	//weapon->damageTypes;//ダメージタイプによる場合分け
@@ -358,10 +369,17 @@ void Enemy::onCollisionEnter( btPersistentManifold *manifold, btCollisionObject 
 
 	if( isDied() )
 	{
+		//はじめて死んだとき
 		if(mElapsedTimeSinceDeath==0.f){
-			//sendEvent
+			//もう一回こことおらないようにちょっと足しておく
 			mElapsedTimeSinceDeath = (std::numeric_limits<float>::min)();
 			
+			++mChain;
+
+			//send event maneger
+			auto evmngr = Event::Manager::instance();
+			auto enemy = std::dynamic_pointer_cast<Enemy>(shared_from_this());
+			evmngr->queueEvent(Event::EventData::KilledEnemy::create(enemy) );
 			
 			//死んだら回転するようにする
 			btVector3 btv3LocalInertia(0.f, 0.f, 0.f);
@@ -440,14 +458,8 @@ void Enemy::takeDamage(BaseObject * DamageCauser)
 
 	auto *weapon = DamageCauser->getWeaponStatus();
 	int d = weapon->caluculateDamage();
-	mStatus->hp.add(100000) ;
-	mStatus->hp;
-	
-	mStatus->hp.add(-100000);
-	assert(mStatus->hp >= 0);
-
-
-
+	mStatus->hp.add(-d);
+	mDamageValueForChain = std::max(mDamageValueForChain, d);
 }
 
 int Enemy::calculateDamage()

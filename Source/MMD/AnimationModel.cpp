@@ -206,6 +206,13 @@ void AnimationModel::addToWorld(){
 }
 void AnimationModel::removeFromWorld(){
 	mModel->removeFromWorld();
+	for (
+		AccessoryMap::const_iterator it = mAccessoryMap.begin(), end = mAccessoryMap.end();
+		it != end;
+		++it)
+	{
+		it->second->removeFromWorld();
+	}
 }
 
 

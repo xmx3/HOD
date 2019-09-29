@@ -20,6 +20,7 @@
 #include"BulletPhysics/HelperCallbacks.h"
 
 #include"Component/BaseComponent.h"
+#include"Component/RigidBodyComponent.h"
 #include"GameObject/BaseObject.h"
 namespace Input {
 
@@ -159,6 +160,56 @@ Component::BaseComponentWeakPtr contactTestAll( float radius, btVector3 &sphereP
 
 }
 */
+//いちばん近いオブジェクトを返す
+GameObject::BaseObjectWeakPtr contactTestAll(float radius, btVector3 &spherePos) {
+
+	btSphereShape sphere(radius);
+	btCollisionObject col;
+	col.setCollisionShape(&sphere);
+	col.setWorldTransform(btTransform(btMatrix3x3::getIdentity(), spherePos));
+
+	BulletPhysics::ClosestObjectContactResultCallbackFromObjectA cb(&col);
+	BulletPhysics::Manager::instance()->getWorldPtr()->contactTest(&col, cb);
+
+
+	GameObject::BaseObjectWeakPtr wp;
+
+	Component::BaseComponent* collision = nullptr;
+	//ぶつかったのがStageかどうか
+	//上のDynamicFilterによるフィルタリングでStageが指定されているStaticFilter排除しているので余計なことしているが
+	//Stageとはぶつかりたくないというのをコードに示すためこのコードで
+	if (
+		cb.mClosestObj &&
+		(collision = static_cast<Component::RigidBodyComponent*>(cb.mClosestObj->getUserPointer())) &&
+		!collision->getOwner()->getRTTI().isExactly(GameObject::Rttis::Stage()))
+	{
+		wp = collision->getOwner()->shared_from_this();
+	}
+
+	return wp;
+
+}
+
+
+//球とオブジェクトが接触しているか
+//is sphere contacted with object?
+bool contactTestBetweenSphereAndObject(float radius, btVector3 &spherePos, btCollisionObject *obj) {
+
+	btSphereShape sphere(radius);
+	btCollisionObject col;
+	col.setCollisionShape(&sphere);
+	col.setWorldTransform(btTransform(btMatrix3x3::getIdentity(), spherePos));
+
+	BulletPhysics::SimpleContactResultCallback cb;
+	BulletPhysics::Manager::instance()->getWorldPtr()->contactPairTest(&col, obj, cb);
+
+	if (cb.mConnected)
+	{
+		return true;
+	}
+	return false;
+}
+
 
 } //end anonymous namespace
 
@@ -223,13 +274,12 @@ void PlayerMouse::update(const float elapsedTime){
 		//TRACE3("(%f, %f, %f)\n", mMousePos.x(), mMousePos.y(), mMousePos.z() );
 	}
 	
-	/*一旦コメントアウト
+	mOnObject.reset();
 	auto baseComponent = contactTestAll(mMouseRadius, mMousePos);
 	if ( auto p = baseComponent.lock()) {
-		mOnObject = p->getOwner()->shared_from_this();
+		mOnObject = p->shared_from_this();
 	}
 	mIsOnPlayer = contactTestBetweenSphereAndObject( mMouseRadius, mMousePos, mPlayerBtObject ); 
-	*/
 
 	if(mIsInit){
 		mIsInit=false;

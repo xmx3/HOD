@@ -50,8 +50,9 @@ data.bin
 /Obj
 /Project
 /Recycle Bin
-/Script
-/ShaderTest
+# /Script
+# /Shader
 /Tool
-/Source/tolua_bind/luafunc_glue.cpp
-/Source/tolua_bind/luafunc_glue.h
+このフォルダを作った経緯.txt
+Source/tolua_bind/luafunc_glue.cpp
+Source/tolua_bind/luafunc_glue.h

@@ -95,6 +95,10 @@ public:
 	//ダメージを与えるオブジェクトでなければnullを返すこともある
 	virtual const GameObjectData::WeaponStatus* getWeaponStatus()override;
 
+	int getChain() const {
+		return mChain;
+	}
+
 private:
 	//初期化に自分ののスマートポインタ使いたい場合がありそうなのでここでメンバーの初期化はしない
 	//要は遅延初期化をしたい
@@ -134,6 +138,9 @@ private:
 
 	unsigned short	mFilterGroup;
 	unsigned short	mFilterMask;
+
+	int mDamageValueForChain;
+	int mChain;
 
 
 };

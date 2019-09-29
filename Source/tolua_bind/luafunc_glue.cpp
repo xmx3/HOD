@@ -1,6 +1,6 @@
 /*
 ** Lua binding: luafunc
-** Generated automatically by tolua++-1.0.92 on 09/11/19 10:02:20.
+** Generated automatically by tolua++-1.0.92 on 09/29/19 15:30:36.
 */
 
 #ifndef __cplusplus
@@ -2183,6 +2183,32 @@ static int tolua_luafunc_GUI_Label_setUV00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* function: Telop::destroy */
+#ifndef TOLUA_DISABLE_tolua_luafunc_Telop_destroy00
+static int tolua_luafunc_Telop_destroy00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isnoobj(tolua_S,1,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  {
+   Telop::destroy();
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'destroy'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* function: Telop::insert */
 #ifndef TOLUA_DISABLE_tolua_luafunc_Telop_insert00
 static int tolua_luafunc_Telop_insert00(lua_State* tolua_S)
@@ -2210,6 +2236,88 @@ static int tolua_luafunc_Telop_insert00(lua_State* tolua_S)
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'insert'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* function: Telop::eraseNow */
+#ifndef TOLUA_DISABLE_tolua_luafunc_Telop_eraseNow00
+static int tolua_luafunc_Telop_eraseNow00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isnoobj(tolua_S,1,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  {
+   Telop::eraseNow();
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'eraseNow'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* function: Telop::draw */
+#ifndef TOLUA_DISABLE_tolua_luafunc_Telop_draw00
+static int tolua_luafunc_Telop_draw00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isnumber(tolua_S,1,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  float elapsed = ((float)  tolua_tonumber(tolua_S,1,0));
+  {
+   Telop::draw(elapsed);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'draw'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* function: Telop::setTime */
+#ifndef TOLUA_DISABLE_tolua_luafunc_Telop_setTime00
+static int tolua_luafunc_Telop_setTime00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isnumber(tolua_S,1,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  float time = ((float)  tolua_tonumber(tolua_S,1,0));
+  {
+   Telop::setTime(time);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'setTime'.",&tolua_err);
  return 0;
 #endif
 }
@@ -2299,11 +2407,70 @@ static int tolua_luafunc_Telop_setDefalutFontColor00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* function: Telop::setPos */
+#ifndef TOLUA_DISABLE_tolua_luafunc_Telop_setPos00
+static int tolua_luafunc_Telop_setPos00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isnumber(tolua_S,1,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  unsigned int x = ((unsigned int)  tolua_tonumber(tolua_S,1,0));
+  unsigned int y = ((unsigned int)  tolua_tonumber(tolua_S,2,0));
+  {
+   Telop::setPos(x,y);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'setPos'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* function: Telop::parse */
 #ifndef TOLUA_DISABLE_tolua_luafunc_Telop_parse00
 static int tolua_luafunc_Telop_parse00(lua_State* tolua_S)
 {
 #ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_iscppstring(tolua_S,1,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const std::string str = ((const std::string)  tolua_tocppstring(tolua_S,1,0));
+  {
+   bool tolua_ret = (bool)  Telop::parse(str);
+   tolua_pushboolean(tolua_S,(bool)tolua_ret);
+   tolua_pushcppstring(tolua_S,(const char*)str);
+  }
+ }
+ return 2;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'parse'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* function: Telop::parse */
+#ifndef TOLUA_DISABLE_tolua_luafunc_Telop_parse01
+static int tolua_luafunc_Telop_parse01(lua_State* tolua_S)
+{
  tolua_Error tolua_err;
  if (
      !tolua_isstring(tolua_S,1,0,&tolua_err) ||
@@ -2312,7 +2479,6 @@ static int tolua_luafunc_Telop_parse00(lua_State* tolua_S)
  )
   goto tolua_lerror;
  else
-#endif
  {
   const char* data = ((const char*)  tolua_tostring(tolua_S,1,0));
   unsigned int size = ((unsigned int)  tolua_tonumber(tolua_S,2,0));
@@ -2322,9 +2488,33 @@ static int tolua_luafunc_Telop_parse00(lua_State* tolua_S)
   }
  }
  return 1;
+tolua_lerror:
+ return tolua_luafunc_Telop_parse00(tolua_S);
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* function: Telop::isFinished */
+#ifndef TOLUA_DISABLE_tolua_luafunc_Telop_isFinished00
+static int tolua_luafunc_Telop_isFinished00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isnoobj(tolua_S,1,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  {
+   bool tolua_ret = (bool)  Telop::isFinished();
+   tolua_pushboolean(tolua_S,(bool)tolua_ret);
+  }
+ }
+ return 1;
 #ifndef TOLUA_RELEASE
  tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'parse'.",&tolua_err);
+ tolua_error(tolua_S,"#ferror in function 'isFinished'.",&tolua_err);
  return 0;
 #endif
 }
@@ -23251,6 +23441,135 @@ static int tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_resetAll00(lua_S
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: addScore of class  Sequence::HatuneOfTheDead::LuaImpl::State */
+#ifndef TOLUA_DISABLE_tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_addScore00
+static int tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_addScore00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Sequence::HatuneOfTheDead::LuaImpl::State",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Sequence::HatuneOfTheDead::LuaImpl::State* self = (Sequence::HatuneOfTheDead::LuaImpl::State*)  tolua_tousertype(tolua_S,1,0);
+  int score = ((int)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'addScore'",NULL);
+#endif
+  {
+   self->addScore(score);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'addScore'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: getScore of class  Sequence::HatuneOfTheDead::LuaImpl::State */
+#ifndef TOLUA_DISABLE_tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_getScore00
+static int tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_getScore00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"const Sequence::HatuneOfTheDead::LuaImpl::State",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const Sequence::HatuneOfTheDead::LuaImpl::State* self = (const Sequence::HatuneOfTheDead::LuaImpl::State*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getScore'",NULL);
+#endif
+  {
+   int tolua_ret = (int)  self->getScore();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getScore'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: getNumberKilledEnemy of class  Sequence::HatuneOfTheDead::LuaImpl::State */
+#ifndef TOLUA_DISABLE_tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_getNumberKilledEnemy00
+static int tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_getNumberKilledEnemy00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"const Sequence::HatuneOfTheDead::LuaImpl::State",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const Sequence::HatuneOfTheDead::LuaImpl::State* self = (const Sequence::HatuneOfTheDead::LuaImpl::State*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getNumberKilledEnemy'",NULL);
+#endif
+  {
+   int tolua_ret = (int)  self->getNumberKilledEnemy();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getNumberKilledEnemy'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: getPlayerHp of class  Sequence::HatuneOfTheDead::LuaImpl::State */
+#ifndef TOLUA_DISABLE_tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_getPlayerHp00
+static int tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_getPlayerHp00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"const Sequence::HatuneOfTheDead::LuaImpl::State",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const Sequence::HatuneOfTheDead::LuaImpl::State* self = (const Sequence::HatuneOfTheDead::LuaImpl::State*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getPlayerHp'",NULL);
+#endif
+  {
+   int tolua_ret = (int)  self->getPlayerHp();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getPlayerHp'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: new of class  HOD::EnemySpawner */
 #ifndef TOLUA_DISABLE_tolua_luafunc_HOD_EnemySpawner_new00
 static int tolua_luafunc_HOD_EnemySpawner_new00(lua_State* tolua_S)
@@ -24545,11 +24864,18 @@ TOLUA_API int tolua_luafunc_open (lua_State* tolua_S)
   tolua_endmodule(tolua_S);
   tolua_module(tolua_S,"Telop",0);
   tolua_beginmodule(tolua_S,"Telop");
+   tolua_function(tolua_S,"destroy",tolua_luafunc_Telop_destroy00);
    tolua_function(tolua_S,"insert",tolua_luafunc_Telop_insert00);
+   tolua_function(tolua_S,"eraseNow",tolua_luafunc_Telop_eraseNow00);
+   tolua_function(tolua_S,"draw",tolua_luafunc_Telop_draw00);
+   tolua_function(tolua_S,"setTime",tolua_luafunc_Telop_setTime00);
    tolua_function(tolua_S,"setFont",tolua_luafunc_Telop_setFont00);
    tolua_function(tolua_S,"setDefalutDuration",tolua_luafunc_Telop_setDefalutDuration00);
    tolua_function(tolua_S,"setDefalutFontColor",tolua_luafunc_Telop_setDefalutFontColor00);
+   tolua_function(tolua_S,"setPos",tolua_luafunc_Telop_setPos00);
    tolua_function(tolua_S,"parse",tolua_luafunc_Telop_parse00);
+   tolua_function(tolua_S,"parse",tolua_luafunc_Telop_parse01);
+   tolua_function(tolua_S,"isFinished",tolua_luafunc_Telop_isFinished00);
   tolua_endmodule(tolua_S);
   tolua_module(tolua_S,"GUI",0);
   tolua_beginmodule(tolua_S,"GUI");
@@ -25860,6 +26186,10 @@ TOLUA_API int tolua_luafunc_open (lua_State* tolua_S)
       tolua_function(tolua_S,"needDrawCall",tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_needDrawCall00);
       tolua_function(tolua_S,"setNeedDrawCall",tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_setNeedDrawCall00);
       tolua_function(tolua_S,"resetAll",tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_resetAll00);
+      tolua_function(tolua_S,"addScore",tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_addScore00);
+      tolua_function(tolua_S,"getScore",tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_getScore00);
+      tolua_function(tolua_S,"getNumberKilledEnemy",tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_getNumberKilledEnemy00);
+      tolua_function(tolua_S,"getPlayerHp",tolua_luafunc_Sequence_HatuneOfTheDead_LuaImpl_State_getPlayerHp00);
      tolua_endmodule(tolua_S);
     tolua_endmodule(tolua_S);
    tolua_endmodule(tolua_S);

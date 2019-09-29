@@ -121,8 +121,6 @@ namespace MMD {
 
 			pM->isSphereTextureAdditive_ = false;
 
-			//toon無効
-			//assert( pM->toonIndex_ != 0xff);
 
 			// テクスチャ
 			if (pPMD->textureFileName[0]) {
@@ -192,13 +190,12 @@ namespace MMD {
 			pM->numEdges_ = pPMD->nEdges;
 			pM->edgeFlag_ = pPMD->edgeFlag;
 			//TRACE1("%d\n",pPMD->edgeFlag);
-			//toon無効
+			
 			assert(
-				pM->toonIndex_ != 0xff &&
+			//	pM->toonIndex_ != 0xff &&//toonIndexが0xffの場合でもok ただしtoon0.bmpとは何？まあ真っ白テクスチャか何かでしょう
 				static_cast<const GameLib::Graphics::Texture &>(pM->texture_) &&
 				static_cast<const GameLib::Graphics::Texture &>(pM->sphereTexture_) &&
 				"描画高速化のため VertexDataUsingVertexBlendShader::drawByMMEを改造したため,テクスチャがない場合は許さない。");
-
 
 			pNext += sizeof(PMD_MATERIAL);
 		}
@@ -374,10 +371,11 @@ namespace MMD {
 
 		for (unsigned int i = 0; i < numMaterials_; ++i) {
 			if (materials_[i].toonIndex_ == 0xff) {
-				materials_[i].toonColor_[0] = 1.f;
-				materials_[i].toonColor_[1] = 1.f;
-				materials_[i].toonColor_[2] = 1.f;
-				materials_[i].toonColor_[3] = 1.f;
+				unsigned int c = toonColors_[materials_[i].toonIndex_];
+				materials_[i].toonColor_[0] = static_cast<float>((c >> 16) & 0xff) / 255.f;
+				materials_[i].toonColor_[1] = static_cast<float>((c >> 8) & 0xff) / 255.f;
+				materials_[i].toonColor_[2] = static_cast<float>((c) & 0xff) / 255.f;
+				materials_[i].toonColor_[3] = static_cast<float>((c >> 24) & 0xff) / 255.f;
 				continue;
 			}
 			materials_[i].toonTexture_ = toonTextures_[materials_[i].toonIndex_];

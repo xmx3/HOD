@@ -1,0 +1,105 @@
+#include"../Basic/mmm.fx"
+// ƒpƒ‰ƒ[ƒ^éŒ
+/*
+DRAW_ALPHA ‚Éu1v‚ğw’è‚·‚é‚Æ"ƒeƒNƒXƒ`ƒƒ‚ª”¼“§–¾"‚ÌƒsƒNƒZƒ‹‚ğ
+ƒIƒtƒXƒNƒŠ[ƒ“ƒoƒbƒtƒ@‚ÉƒŒƒ“ƒ_ƒŠƒ“ƒO‚µ‚È‚­‚È‚è‚Ü‚·B
+(SSAO‚ÌŒvZ‚©‚ç–³‹‚³‚ê‚Ü‚·)
+*/
+#define DRAW_ALPHA 0
+
+//-----------------------------------------------------
+//‚±‚±‚©‚çæ‚ÍƒGƒtƒFƒNƒg‚ÉÚ‚µ‚¢•û‚Í‚¢‚¶‚ç‚È‚¢‚Ù‚¤‚ª—Ç‚¢‚Å‚·
+
+static float fmRange = 0.8f;
+
+// À–@•ÏŠ·s—ñ
+float4x4 matWVP		: WORLDVIEWPROJECTION;
+float4x4 matWV		: WORLDVIEW;
+float4x4 matProj	: PROJECTION;
+
+struct VS_OUTPUT
+{
+	float4 Pos		: POSITION;		// Ë‰e•ÏŠ·À•W
+	float2 TexCoord	: TEXCOORD0;	// UV
+	float4 Depth	: TEXCOORD1;	// ’¸“_[“x
+};
+
+// ƒIƒuƒWƒFƒNƒg‚ÌƒeƒNƒXƒ`ƒƒ
+texture ObjectTexture: MATERIALTEXTURE;
+sampler ObjTexSampler = sampler_state
+{
+	texture = <ObjectTexture>;
+	MINFILTER = LINEAR;
+	MAGFILTER = LINEAR;
+};
+
+bool use_texture;  //ƒeƒNƒXƒ`ƒƒ‚Ì—L–³
+bool use_toon;     //ƒgƒD[ƒ“‚Ì—L–³
+
+//==============================================
+// ’¸“_ƒVƒF[ƒ_
+// MikuMikuMoving“Æ©‚Ì’¸“_ƒVƒF[ƒ_“ü—Í(MMM_SKINNING_INPUT)
+//==============================================
+VS_OUTPUT Basic_VS(MMM_SKINNING_INPUT IN)
+{
+	VS_OUTPUT Out = (VS_OUTPUT)0;
+
+	float4x4 matP = matProj;
+ 
+	matP._11 *= fmRange;
+	matP._22 *= fmRange;
+
+	//=====================================
+	//MikuMikuMoving“Æ©‚ÌƒXƒLƒjƒ“ƒOŠÖ”(MMM_SkinnedPosition)BÀ•W‚Ì‚İ‚ğæ“¾‚·‚éB
+	//=====================================
+	float4 position = MMM_SkinnedPosition(IN.Pos, IN.BlendWeight, IN.BlendIndices, IN.SdefC, IN.SdefR0, IN.SdefR1);
+	
+	Out.Pos = mul(position, mul(matWV, matP) );
+
+	Out.Depth = Out.Pos;
+	Out.TexCoord = IN.Tex;
+	
+	return Out;
+}
+
+// ƒsƒNƒZƒ‹ƒVƒF[ƒ_
+float4 Basic_PS( VS_OUTPUT IN ) : COLOR
+{
+	float a = 1.0f;
+	
+	if(use_texture)
+	{
+		a = tex2D(ObjTexSampler,IN.TexCoord).a;
+		
+		if(DRAW_ALPHA && a < 1.0f)
+		{
+			a = 0.0f;
+		}
+	}
+	
+	return float4(IN.Depth.z/IN.Depth.w,1,1,a);
+}
+
+// ƒIƒuƒWƒFƒNƒg•`‰æ—pƒeƒNƒjƒbƒN
+technique MainTec < string MMDPass = "object"; > {
+	pass DrawObject
+	{
+		VertexShader = compile vs_2_0 Basic_VS();
+		PixelShader  = compile ps_2_0 Basic_PS();
+	}
+}
+
+// ƒIƒuƒWƒFƒNƒg•`‰æ—pƒeƒNƒjƒbƒN
+technique MainTecBS  < string MMDPass = "object_ss"; > {
+	pass DrawObject {
+		AlphaBlendEnable = FALSE;
+		VertexShader = compile vs_2_0 Basic_VS();
+		PixelShader  = compile ps_2_0 Basic_PS();
+	}
+}
+technique EdgeTec < string MMDPass = "edge"; > {
+
+}
+technique ShadowTech < string MMDPass = "shadow";  > {
+	
+}

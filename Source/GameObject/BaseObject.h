@@ -14,8 +14,8 @@ namespace GameObjectData {
 
 namespace GameObject {
 	class BaseObject;
-	typedef std::weak_ptr<BaseObject> BaseObjectObjectWeakPtr;
-	typedef std::shared_ptr<BaseObject> BaseObjectObjectSharedPtr;
+	typedef std::weak_ptr<BaseObject> BaseObjectWeakPtr;
+	typedef std::shared_ptr<BaseObject> BaseObjectSharedPtr;
 	
 
 	//BaseActor

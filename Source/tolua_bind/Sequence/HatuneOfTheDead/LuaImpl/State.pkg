@@ -50,6 +50,13 @@ public:
 	void setNeedDrawCall(bool b);
 
 	void resetAll();
+
+	void addScore(int score);
+	int getScore()const;
+	int getNumberKilledEnemy()const;
+	int getPlayerHp()const;
+
+
 };
 
 }}} //namespace Sequence::HatuneOfTheDead::LuaImpl

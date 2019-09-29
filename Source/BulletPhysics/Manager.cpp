@@ -66,6 +66,7 @@ Manager::~Manager() {
 	
 		if(pCol){
 			TRACE0("not removed object: RigidBodyComponent\n");
+			TRACE1("not removed class name :%s.\n", pCol->getOwner()->getRTTI().getClassName().c_str() );
 		} else {
 			TRACE1("not removed object: NULL\n", 0 );
 		}

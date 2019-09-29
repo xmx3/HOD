@@ -69,6 +69,10 @@ public:
 	
 	bool needDrawCall()const;
 	void setNeedDrawCall(bool b);
+	void addScore(int score);
+	int getScore()const;
+	int getNumberKilledEnemy()const;
+	int getPlayerHp()const;
 private:
 	State();
 	virtual ~State();
@@ -100,6 +104,8 @@ private:
 	std::unique_ptr<HOD::EnemySpawner> mEnemySpawner;
 
 	bool mNeedDrawCall;
+	int mScore;
+	int mNumberKilledEnemy;
 };
 
 }}} //namespace Sequence::HatuneOfTheDead::LuaImpl

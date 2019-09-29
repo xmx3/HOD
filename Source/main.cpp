@@ -4,6 +4,7 @@
 #include"Sequence/Parent.h"
 //#include"GameObject/AccessoryUtils/Manager.h"
 #include"MME/Manager.h"
+#include"MME/Drawer/GameDrawer.h"
 #include"SoundManager.h"
 #include"MMD/MMDDataBase.h"
 #include<memory>
@@ -42,12 +43,12 @@ namespace GameLib{
 	void Framework::configure( Configuration* c ){
 		//c->enableVSync( true );
 		c->setArchiveNumber( 1 );
-		c->setArchiveName( 0, "data.bin" );
+		//c->setArchiveName( 0, "data.bin" );
 		c->setLoadMode( LOAD_DIRECT_FIRST );
 		c->setExtraThreadNumber( 1 );
 		//c->enableAntiAlias(false);
-		//c->setWidth(1200);
-		//c->setHeight(700);
+		c->setWidth(1280);
+		c->setHeight(800);
 		//c->enableFullScreen();
 		
 	}
@@ -226,9 +227,11 @@ namespace GameLib{
 		if ( isEndRequested() ){
 			//グローバルにあるものは勝手には消えないので開放
 			Sequence::Parent::destroy();
+			MME::Drawer::GameDrawer::destroy();
 			GUI::Manager::destory();
 			//GameObject::AccessoryUtils::Manager::destroy();
-			MME::Manager::instance()->destroy();
+			auto *mme = MME::Manager::instance();
+			mme->destroy();
 			SoundManager::destroy();
 			//MME::Object::PointLight::destroy();
 			MMD::MMDDataBase::destroy();

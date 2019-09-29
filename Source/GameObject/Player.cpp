@@ -1,6 +1,8 @@
 #include"Player.h"
 #include"PlayerUtils/Updater/Parent.h"
 
+#include"Enemy.h"
+
 #include<d3dx9.h>
 
 
@@ -402,12 +404,12 @@ void Player::drawHUD() const {
 	ds.setPosition( 0, 0);
 	ds.precision( 5 );
 	ds << "HP: " << mStatus->hp <<GameLib::endl;
-	ds << "stamina: " << mStatus->stamina << GameLib::endl;
-	const btVector3 pos = mRigidBodyComponent->getWorldTransform().getOrigin();	
-	ds << "pos( " <<
-		pos.x() << ", " <<
-		pos.y() << ", " <<
-		pos.z() << " )" << GameLib::endl;;
+	//ds << "stamina: " << mStatus->stamina << GameLib::endl;
+	//const btVector3 pos = mRigidBodyComponent->getWorldTransform().getOrigin();	
+	//ds << "pos( " <<
+		//pos.x() << ", " <<
+		//pos.y() << ", " <<
+		//pos.z() << " )" << GameLib::endl;;
 }
 
 void Player::preDraw() const {
@@ -472,7 +474,10 @@ void Player::onCollisionEnter( btPersistentManifold *manifold, btCollisionObject
 	auto rb = static_cast<Component::RigidBodyComponent*>(obj->getUserPointer());
 	const RTTI &rtti = rb->getOwner()->getRTTI();
 	if (rtti.isExactly(Rttis::Enemy())) {
-		mStatus->hp.add(-1000);
+		Enemy* enemy = dynamic_cast<Enemy*>(rb->getOwner());
+		if (enemy && !enemy->isDied()) {
+			mStatus->hp.add(-1000);
+		}
 	}
 }
 
@@ -480,7 +485,10 @@ void Player::onCollisionStay( btPersistentManifold *manifold, btCollisionObject 
 	auto rb = static_cast<Component::RigidBodyComponent*>(obj->getUserPointer());
 	const RTTI &rtti = rb->getOwner()->getRTTI();
 	if (rtti.isExactly(Rttis::Enemy())) {
-		mStatus->hp.add(-10);
+		Enemy* enemy = dynamic_cast<Enemy*>(rb->getOwner());
+		if (enemy && !enemy->isDied()) {
+			mStatus->hp.add(-10);
+		}
 	}
 	//ICollider *gameObj = static_cast<ICollider*>( obj->getUserPointer() );
 	//mUpdater->onCollisionEnter( manifold, me, obj );

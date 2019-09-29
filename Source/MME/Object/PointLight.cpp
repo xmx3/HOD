@@ -5,7 +5,7 @@
 #include"MME/PostEffect.h"
 
 namespace MME{ namespace Object{ //MME::Object
-static const char *shaderFile="ShaderTest/Basic/DSPoinghtLight.fx";
+static const char *shaderFile="Shader/Basic/DSPoinghtLight.fx";
 std::unique_ptr<XFile::Model> PointLight::msModel=NULL; 
 PostEffectSharedPtr PointLight::msEffect=NULL;
 bool PointLight::msIsReady=false;

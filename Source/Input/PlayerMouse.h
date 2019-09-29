@@ -10,6 +10,7 @@ namespace GameObject {
 	typedef std::weak_ptr<BaseObject> BaseObjectObjectWeakPtr;
 }
 
+
 namespace GameLib{
 	namespace Scene{
 		class Model;

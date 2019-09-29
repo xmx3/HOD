@@ -15,16 +15,16 @@
 namespace MME {
 namespace {
 using namespace Batch;
-static const char *skDrawGBufferFxFileName = "ShaderTest/Basic/deffered_shading_luminous/basic.fx";
-//static const char *skDrawGBufferFxFileName = "ShaderTest/Basic/full.fx";//defalut
-//static const char *skDrawGBufferFxFileName = "ShaderTest/Basic/deffered_shading/basic.fx";
-//static const char *skDrawGBufferFxFileName = "ShaderTest/Basic/deffered_shading_shadow/basic.fx";
+static const char *skDrawGBufferFxFileName = "Shader/Basic/deffered_shading_luminous/basic.fx";
+//static const char *skDrawGBufferFxFileName = "Shader/Basic/full.fx";//defalut
+//static const char *skDrawGBufferFxFileName = "Shader/Basic/deffered_shading/basic.fx";
+//static const char *skDrawGBufferFxFileName = "Shader/Basic/deffered_shading_shadow/basic.fx";
 
-static const char *skLuminousFxFileName = "ShaderTest/Basic/deffered_shading_luminous/postEffect.fx";
+static const char *skLuminousFxFileName = "Shader/Basic/deffered_shading_luminous/postEffect.fx";
 
-static const char *skFXAAFileName = "ShaderTest/Fxaa/fxaa.fx";
+static const char *skFXAAFileName = "Shader/Fxaa/fxaa.fx";
 
-static const char *skPointLightFxFileName="ShaderTest/Basic/DSPoinghtLight.fx";
+static const char *skPointLightFxFileName="Shader/Basic/DSPoinghtLight.fx";
 
 StandardEffectBatch* createStandardEffectBatchIf( const char* filename ){
 	MME::Manager* mme= MME::Manager::instance();
@@ -255,8 +255,8 @@ void Impl::draw(){
 
 	//mme->drawShadowMapBuffer();
 
-	//drawOffScreen( "ShaderTest/AutoLuminous4/AutoLuminous.fx", "AL_EmitterRT" );
-	//drawOffScreen( "ShaderTest/AutoLuminous4/AutoLuminousBasic.fx", "ALB_EmitterRT" );
+	//drawOffScreen( "Shader/AutoLuminous4/AutoLuminous.fx", "AL_EmitterRT" );
+	//drawOffScreen( "Shader/AutoLuminous4/AutoLuminousBasic.fx", "ALB_EmitterRT" );
 
 	mme->sendParamsToGameLibGraphicsManager();
 }

@@ -22,14 +22,18 @@ public:
 	}
 
 	static void destroy(){
-		getThis().reset(NULL);
+		getThis().reset(nullptr);
 	}
 
+
+	
 	//eventManagerではなくて
 	//GameObjectManagerかEnemyUtil::Managerに
 	//移行するべき
 	//ここでオブジェクトの管理までするといろいろ混ざる気がする
-	bool add(const GameObject::BaseObjectObjectSharedPtr &obj){
+	//現状ではHOD::EnemyManagerあるからそこだね
+	bool add(const GameObject::BaseObjectSharedPtr &obj){
+		assert(false && "使うな。使っても副作用はないけど設計がカス、わざわざリファクタリングする時間が取れないのでとりあえずこのまま");
 		if(obj->getRTTI().isExactly( Rttis::Enemy() )){
 			mEnemiesInWorld.push_back( obj );
 			return true;
@@ -37,7 +41,7 @@ public:
 			return false;
 		}
 	}
-	bool remove(const  GameObject::BaseObjectObjectSharedPtr &obj){
+	bool remove(const  GameObject::BaseObjectSharedPtr &obj){
 		if(obj->getRTTI().isExactly( Rttis::Enemy() )){
 			mEnemiesInWorld.remove( obj );
 			if( mEnemiesInWorld.empty() ){
@@ -76,10 +80,10 @@ private:
 		return sThis;
 	}
 
-	std::list< GameObject::BaseObjectObjectSharedPtr> mObjectsInWorld;
+	std::list< GameObject::BaseObjectSharedPtr> mObjectsInWorld;
 
-	std::list< GameObject::BaseObjectObjectSharedPtr> mEnemiesInWorld;
-	std::list< GameObject::BaseObjectObjectSharedPtr> mEnemiesOutsideWorld;
+	std::list< GameObject::BaseObjectSharedPtr> mEnemiesInWorld;
+	std::list< GameObject::BaseObjectSharedPtr> mEnemiesOutsideWorld;
 };
 
 	}//end	namespace Event

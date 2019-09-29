@@ -149,24 +149,26 @@ public:
 
 $#include <Telop.h>
 namespace Telop{
+	void destroy();
 	void insert( const char *text, float start, float duration );
 	//現在表示してる字幕を消去
-	//void eraseNow();
+	void eraseNow();
 	//ゼロからスタートしてるのを前提
 	//途中からだと表示されない字幕あり
 	//例　1秒から10秒間表示を2秒からはじめた場合、それは表示されない
-	//void draw( float elapsed );
-	//void setTime(float time );
+	void draw( float elapsed );
+	void setTime(float time );
 	void setFont( GameLib::Scene::Font );
 	void setDefalutDuration( float duration);
 	void setDefalutFontColor( unsigned int);
-	//void setPos( unsigned int x, unsigned int y );
+	void setPos( unsigned int x, unsigned int y );
+	bool parse( const std::string &str );
 	bool parse( const char* data, unsigned int size );
 	//テロップを全部再生したか？
 	//ロードと勘違いするかもしれないので
 	//isPlayEnd, isPlayOverといったほうがわかりやすいか？
 	//テロップが何もない場合trueを返す
-	//bool isFinished();
+	bool isFinished();
 	//GameLib::FileIO::OutFile write(const char*filename );
 }
 

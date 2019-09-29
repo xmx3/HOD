@@ -28,6 +28,7 @@
 #include"GameObject/Event/Listener/AddToWorldListener.h"
 #include"GameObject/Event/Listener/RemoveFromWorldListener.h"
 #include"GameObject/Event/Listener/DefeatedAllEnemiesListener.h"
+#include"GameObject/Event/Listener/KilledEnemyListener.h"
 
 #include"GUI/Manager.h"
 
@@ -121,7 +122,8 @@ namespace{
 
 			//材質
 			//アンビエントは地味に0.3くらいで
-			Vector4 ambient( 0.3f, 0.3f, 0.3f, 1.f );
+			//Vector4 ambient( 0.3f, 0.3f, 0.3f, 1.f );
+			Vector4 ambient( 1.f, 1.f, 1.f, 1.f );
 			//後は物体側の特性。あまりじっても仕方ないので固定値で。いろいろいじって結果がどうなるか見てやろう
 			Vector4 diffuseColor( 1.f, 1.f, 1.f, 1.f );
 			Vector4 specularColor( 1.f, 1.f, 1.f, 1.f );
@@ -251,14 +253,13 @@ State::State()
 	mPlayer(nullptr),
 	mCameraAnimation(nullptr),
 	mNextSequence(nullptr),
-	mNeedDrawCall(false)
+	mNeedDrawCall(false),
+	mScore(0),
+	mNumberKilledEnemy(0)
 {
 	cameraInit();
-	BulletPhysics::Manager *bpmngr = BulletPhysics::Manager::instance();
+	resetAll();
 	
-	mEnemyManager.reset( new HOD::EnemyManager() );
-	mEnemySpawner.reset( new HOD::EnemySpawner() );
-
 	//listener の登録
 	//using namespace GameObject::Event::EventData;
 	//using namespace GameObject::Event::Listener;
@@ -270,12 +271,13 @@ State::State()
 
 }
 State::~State(){
+	GameObject::Event::Manager::instance()->destroy();
+
 	mEnemyManager.reset();
 	mEnemySpawner.reset();
 	mCameraAnimation.reset();
 	mStage.reset();
 	mPlayer.reset();
-	GameObject::Event::Manager::instance()->destroy();
 	//MME::Manager::instance()->destroy();
 	//BulletPhysics::Managerが最後(オブジェクトを世界から全てリムーブさせるため)
 	//BulletPhysics::Manager::instance()->release();
@@ -436,13 +438,9 @@ GameObject::Player * State::getPlayer()
 }
 
 void State::removeFromWorldAll() {
-	if (mPlayer) {
-		mPlayer->removeFromWorld();
-	}
-	mEnemyManager->removeFromWorldAll();
-	if (mStage) {
-		mStage->removeFromWorld();
-	}
+	mPlayer ?mPlayer->removeFromWorld() : 0;
+	mEnemyManager ?	mEnemyManager->removeFromWorldAll() : 0 ;
+	mStage ? mStage->removeFromWorld() : 0;
 }
 
 void State::resetBulletPhysics()
@@ -463,14 +461,42 @@ void State::setNeedDrawCall(bool b) {
 
 
 void State::resetAll() {
+	GameObject::Event::Manager::instance()->destroy();
 	resetBulletPhysics();
 	mEnemyManager.reset(new HOD::EnemyManager());
 	mEnemySpawner.reset(new HOD::EnemySpawner());
 	mCameraAnimation.reset();
 	mStage.reset();
 	mPlayer.reset();
-	GameObject::Event::Manager::instance()->destroy();
+	mScore=0;
+	mNumberKilledEnemy = 0;
 
-
+	//listener の登録
+	using namespace GameObject::Event::EventData;
+	using namespace GameObject::Event::Listener;
+	GameObject::Event::Manager *evmngr = GameObject::Event::Manager::instance();
+	//evmngr->addListener( AddToWorldListener::create(), AddToWorld::rtti() );
+	//evmngr->addListener( RemoveFromWorldListener::create(), RemoveFromWorld::rtti() );
+	//evmngr->addListener( DefeatedAllEnemiesListener::create(mStage), DefeatedAllEnemies::rtti() );	
+	evmngr->addListener(KilledEnemyListener::create(), KilledEnemy::rtti() );
 }
+
+void State::addScore(int value) {
+	mScore += value;
+	++mNumberKilledEnemy;
+}
+
+int State::getScore() const {
+	return mScore;
+}
+
+int State::getNumberKilledEnemy() const {
+	return mNumberKilledEnemy;
+}
+
+int State::getPlayerHp() const {
+	return static_cast<int>(mPlayer->getStatus()->hp);
+}
+
+
 }}} //namespace Sequence::HatuneOfTheDead::LuaImpl
