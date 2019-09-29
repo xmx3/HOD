@@ -3,6 +3,7 @@
 [ゲームプログラマになる前に覚えておきたい技術](https://www.amazon.co.jp/%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9E%E3%81%AB%E3%81%AA%E3%82%8B%E5%89%8D%E3%81%AB%E8%A6%9A%E3%81%88%E3%81%A6%E3%81%8A%E3%81%8D%E3%81%9F%E3%81%84%E6%8A%80%E8%A1%93-%E5%B9%B3%E5%B1%B1-%E5%B0%9A/dp/4798021180/ref=sr_1_1?__mk_ja_JP=%E3%82%AB%E3%82%BF%E3%82%AB%E3%83%8A&keywords=%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9E&qid=1569574303&s=books&sr=1-1)を改造し、[スクリプト言語による効率的ゲーム開発 C/C++へのLua組込み実践](https://www.amazon.co.jp/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E8%A8%80%E8%AA%9E%E3%81%AB%E3%82%88%E3%82%8B%E5%8A%B9%E7%8E%87%E7%9A%84%E3%82%B2%E3%83%BC%E3%83%A0%E9%96%8B%E7%99%BA-%E3%81%B8%E3%81%AELua%E7%B5%84%E8%BE%BC%E3%81%BF%E5%AE%9F%E8%B7%B5-GAME-DEVELOPER-%E6%B5%9C%E4%B8%AD/dp/4797348550)でluaを組み込み、MMD、MMEを使えるようにした。
 
 ## Demo
+このDemoが重いです。ロードが完了するまでお待ちいただければ幸いです。
 <img src="demo.gif" width="960" height="540" alt="demo">
 
 
